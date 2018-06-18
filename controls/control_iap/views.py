@@ -565,14 +565,14 @@ class SummaryView(ContentView):
                 {
                     'width': 3,
                     'icon': 'fa-line-chart',
-                    'label': 'Units Sold (2017-01 to 2018-01)',
+                    'label': 'Units Sold (2017-01 to present)',
                     'value': '{}'.format(utils.millions_formatter(sales_unit_sum)),
                     'relative_change': {},
                 },
                 {
                     'width': 3,
                     'icon': 'fa-area-chart',
-                    'label': 'Sales Value (2017-01 to 2018-01)',
+                    'label': 'Sales Value (2017-01 to present)',
                     'value': '{}'.format(utils.millions_formatter(sales_value_sum)),
                     'relative_change': {},
                 },

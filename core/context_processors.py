@@ -8,6 +8,7 @@ def template_variables(request):
         'MEDIA_URL': settings.THEME_URL + 'media/',
         'IMAGE_URL': settings.IMAGE_URL,
         'APPLICATION_NAME': settings.APPLICATION_NAME,
+        'APPLICATION_NAME_SHORT': settings.APPLICATION_NAME_SHORT,
         'COMPANY_NAME': settings.COMPANY_NAME,
         'PROVIDER': settings.PROVIDER,
         'PROVIDER_WEBSITE_URL': settings.PROVIDER_WEBSITE_URL,

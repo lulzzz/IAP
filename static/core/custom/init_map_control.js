@@ -24,11 +24,11 @@ $(document).ready(function () {
                 backgroundColor: null,
                 color: '#ffffff',
                 hoverOpacity: 0.7,
-                selectedColor: '#666666',
+                selectedColor: '#999999',
                 enableZoom: true,
                 showTooltip: true,
                 values: data,
-                scaleColors: ['#d6a771', '#c22a37'],
+                scaleColors: ['#f1b585', '#EF8E3F'],
                 normalizeFunction: 'polynomial',
                 onLabelShow: function (event, label, code) {
                     var count = 0;
