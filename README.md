@@ -1,6 +1,3 @@
-# Datacrag Block Library
+# Integrated Assortment Planning Application
 
-Generic blocks are on the master.
-Project specific files are on dedicated branches.
-
-This repo is the core library.
+Application assembled from generic blocks.
