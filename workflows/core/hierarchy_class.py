@@ -348,6 +348,12 @@ class PropagationTree:
             sublevel_nodes.extend(parent.getchildren())
         self.calculate_mix(sublevel_nodes)
 
+        # Update Parents
+        for level_node in level_nodes:
+            self.update_parents(level_node)
+
+        self.update_mix(self.root.getchildren())
+
 
 
     # Get tree into pandas dataframe
