@@ -373,7 +373,7 @@ class FeatureStoreInput(models.Model, mixins_model.ModelFormFieldNames):
         'region', # read only
         'country', # read only
         'net_retail_sales_in_eur_ty',
-        'average_monthly_sales_for_ty',
+        # 'average_monthly_sales_for_ty',
         'relative_sales_volume_ty',
         'sku_count',
         'average_value_transaction',
