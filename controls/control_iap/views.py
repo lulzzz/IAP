@@ -845,14 +845,6 @@ class SalesPlanningView(ContentView):
                     }
                 },
             },
-            # {
-            #     'full_row': True,
-            #     'title': 'Consolidated Plan',
-            #     'subtitle': 'by plan month, store and brand',
-            #     'type': 'table_read',
-            #     'url': None,
-            #     'width': 12,
-            # },
         ]
     }
 
@@ -962,10 +954,25 @@ class SalesPlanningViewConsolidated(ContentView, mixins_view.SecurityModelNameMi
         'subtitle': 'planning operations',
         'panel_list': [
             {
+                'row_start': True,
+                'title': 'Execution',
+                'subtitle': 'run',
+                'type': 'procedure',
+                'url': reverse_lazy('procedure_list'),
+                'width': 8,
+            },
+            {
+                'row_end': True,
+                'name': 'summary_display',
+                'title': 'Download',
+                'type': 'gallery',
+                'url': reverse_lazy('download_screen'),
+                'width': 4,
+            },
+            {
                 'full_row': True,
                 'title': 'Consolidated Plan',
-                'subtitle': 'under development',
-                # 'subtitle': 'by plan month, store and brand',
+                'subtitle': 'pivot table',
                 'type': 'table_read',
                 'url': None,
                 'width': 12,

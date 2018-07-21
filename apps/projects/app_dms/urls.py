@@ -20,6 +20,11 @@ urlpatterns = [
     url(r'^handsontable/(?P<item>[\w]+)/$', views.MasterTableAPI.as_view(), name='handsontable'), # For DRF page
     url(r'^handsontable_header/(?P<item>[\w]+)/$', views.MasterTableHeaderAPI.as_view(), name='handsontable_header'), # For DRF page
 
+    # RPC
+    url(r'^procedure_run/(?P<item>[\w]+)/$', views.StoredProcedureAPI.as_view(), name='procedure_run'), # For DRF page
+    url(r'^procedure_list$', views.StoredProcedureList.as_view(), name='procedure_list'),
+    url(r'^download_screen$', views.DownloadScreen.as_view(), name='download_screen'),
+
     # Dashboard
     url(r'^store_map$', views.StoreMap.as_view(), name='store_map'),
     url(r'^store_map/(?P<pk>\d+)$', views.StoreMap.as_view(), name='store_map'),
