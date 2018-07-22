@@ -25,10 +25,13 @@ class DMSFilter():
             user_filter_query.save()
 
         # Set filter
-        self.dim_iapfilter = models.DimIAPFilter.objects.filter(
+        dim_iapfilter_queryset = models.DimIAPFilter.objects.filter(
             dim_channel_id=self.dim_channel_id,
             sales_year=self.sales_year,
             sales_season=self.sales_season,
-        ).get().id
+        ).get()
+        self.dim_iapfilter = dim_iapfilter_queryset.id
+        self.dim_channel_name = dim_iapfilter_queryset.dim_channel.name
+        self.dim_iapfilter_label = dim_iapfilter_queryset.get_label()
 
         self.filter_dict['dim_iapfilter'] = self.dim_iapfilter

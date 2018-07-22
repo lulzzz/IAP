@@ -866,6 +866,7 @@ class SalesPlanningViewConsensus(ContentView, mixins_view.SecurityModelNameMixin
                 'type': 'table_read',
                 'url': reverse_lazy('sales_plan_by_month'),
                 'width': 12,
+                'overflow': 'auto',
                 'footer':
                     {
                         'button_list': [
@@ -959,7 +960,7 @@ class SalesPlanningViewConsolidated(ContentView, mixins_view.SecurityModelNameMi
                 'subtitle': 'run',
                 'type': 'procedure',
                 'url': reverse_lazy('procedure_list'),
-                'width': 8,
+                'width': 7,
             },
             {
                 'row_end': True,
@@ -967,7 +968,7 @@ class SalesPlanningViewConsolidated(ContentView, mixins_view.SecurityModelNameMi
                 'title': 'Download',
                 'type': 'gallery',
                 'url': reverse_lazy('download_screen'),
-                'width': 4,
+                'width': 5,
             },
             {
                 'full_row': True,

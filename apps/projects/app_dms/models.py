@@ -278,6 +278,9 @@ class DimIAPFilter(models.Model, mixins_model.ModelFormFieldNames):
     class Meta:
         verbose_name = 'IAP Filter'
 
+    def get_label(self):
+        return self.dim_channel.name + ' ' + str(self.sales_year) + ' ' + self.sales_season
+
     def __str__(self):
         return self.dim_channel.name + ' / ' + str(self.sales_year) + ' / ' + self.sales_season
 

@@ -1,3 +1,4 @@
+import os
 from datetime import datetime, timedelta
 
 from django.shortcuts import render
@@ -684,18 +685,26 @@ class PlanByMonthTable(
         'units LY',
         'sales value LY (EUR)',
         'month PY',
-        'units PY',
-        'sales value PY (EUR)',
+        'units PY from brand plan',
+        'sales value PY from brand plan (EUR)',
+        'units PY from retail plan',
+        'sales value PY from retail plan (EUR)',
+        'units PY consensus',
+        'sales value PY consensus (EUR)',
     ]
     format_list = [
         'input_key',
         'intcomma_rounding0',
         'intcomma_rounding0',
         None,
+        'intcomma_rounding0',
+        'intcomma_rounding0',
+        'intcomma_rounding0',
+        'intcomma_rounding0',
         'input_intcomma_rounding0',
         'input_intcomma_rounding0',
     ]
-    tfoot = '1, 2, 4, 5'
+    tfoot = '1, 2, 4, 5, 6, 7, 8, 9'
     post_amends_filter_dict = False
 
     def set_form_field_list(self):
@@ -704,6 +713,10 @@ class PlanByMonthTable(
             'unit_sales_ly',
             'value_sales_ly',
             'year_month_name_py',
+            'unit_sales_py_product_category_level',
+            'value_sales_py_product_category_level',
+            'unit_sales_py_store_level',
+            'value_sales_py_store_level',
             'unit_sales_py_year_month_level',
             'value_sales_py_year_month_level',
         ]
@@ -1516,46 +1529,37 @@ class StoredProcedureList(views.TableProcedure, mixins_view.SecurityModelNameMix
         }
 
 
-class DownloadScreen(views.SimpleBlockView):
+class DownloadScreen(
+    project_mixins_view.DMSFilter,
+    views.SimpleBlockView
+):
     r"""
     View that displays the uploaded image
     """
 
-    model = models.PlanByMonthProductCategoryStore
+    # model = models.PlanByMonthProductCategoryStore
     template_name = 'blocks/download_screen.html'
 
     def get_context_dict(self, request):
 
-        # Query images
-        query = self.model.objects.filter(
-            upload_file__user=self.request.user,
-            image_type='thumbnail_80x80',
-        ).order_by(self.order_type + self.order_by)[:self.paginate_by]
+        # Get file name
+        file_name = 'Consolidated Plan - ' + self.dim_iapfilter_label + '.xlsx'
+        file_path_abs = os.path.join(cp.UPLOAD_URL_ABS, r'''plans''', file_name)
+        file_path_rel = os.path.join(cp.UPLOAD_URL, r'''plans''', file_name)
+        print(file_path_abs)
 
-        # If user has uploaded an image before
-        if query.exists():
+        # If the Excel file exists for download
+        if os.path.isfile(file_path_abs):
             # Prepare context object
             image_context_dict = dict()
-            image_context_dict['download_file'] = os.path.join(cp.IMAGE_URL, r'''uploads\user1\magic\output_without_tattoo.zip''')
-            image_context_dict['generate_url'] = reverse_lazy('generate_image_list')
-
-            image_list = list()
-            for idx, image in enumerate(query):
-                image_list.append({
-                    'id': image.id,
-                    'label': os.path.basename(str(image.image)),
-                    'text': image.created,
-                    'reference': image.image,
-                })
-
-            image_context_dict['image_list'] = image_list
+            image_context_dict['download_file'] = file_path_rel
             return image_context_dict
 
-        # If user has never uploaded an image
+        # If user has not generated the file yet
         else:
             return {
                 'message': {
-                    'text': 'No image uploaded',
+                    'text': '<p><strong>Excel file was not generated.</strong></p><p>Run the procedure and refresh this panel.</p>',
                     'type': 'info',
                     'position_left': True,
                 }
