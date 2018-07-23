@@ -46,6 +46,7 @@ urlpatterns = [
 
     # Sales planning
     url(r'^sales_plan_by_month$', views.PlanByMonthTable.as_view(), name='sales_plan_by_month'),
+    url(r'^consensus_sales_chart_api/(?P<aggregation>[\w]+)/$', views.ConsensusSalesChartAPI.as_view(), name='consensus_sales_chart_api'),
     url(r'^sales_plan_by_product_category$', views.PlanByProductCategoryTable.as_view(), name='sales_plan_by_product_category'),
     url(r'^sales_plan_by_product_category/(?P<level>[\w]+)$', views.PlanByProductCategoryTable.as_view(), name='sales_plan_by_product_category'),
     url(r'^sales_plan_by_product_category/(?P<level>[\w]+)/$', views.PlanByProductCategoryTable.as_view(), name='sales_plan_by_product_category'),
@@ -55,6 +56,7 @@ urlpatterns = [
     url(r'^sales_plan_by_store/(?P<level>[\w]+)$', views.PlanByStoreTable.as_view(), name='sales_plan_by_store'),
     url(r'^sales_plan_by_store/(?P<level>[\w]+)/$', views.PlanByStoreTable.as_view(), name='sales_plan_by_store'),
     url(r'^sales_plan_chart_api/(?P<aggregation>[\w]+)/$', views.SalesPlanChartAPI.as_view(), name='sales_plan_chart_api'),
+    url(r'^consolidated_plan_pivottable$', views.ConsolidatedPlanPivotTable.as_view(), name='consolidated_plan_pivottable'),
 
     # Range planning
     url(r'^range_architecture$', views.RangeArchitectureTable.as_view(), name='range_architecture'),

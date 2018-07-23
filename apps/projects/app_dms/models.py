@@ -665,6 +665,7 @@ class PlanByMonthProductCategoryStore(models.Model):
     # Informative fields
     cluster_user = models.CharField(max_length=2)
     product_division = models.CharField(verbose_name='product group', max_length=150)
+    year_month_name_py = models.CharField(verbose_name='month PY', max_length=7)
 
     # PY fields calculated
     unit_sales_py = models.IntegerField(verbose_name='unit sales PY', blank=True, null=True)
@@ -876,8 +877,12 @@ class StrategicSalesPlan(models.Model, mixins_model.ModelFormFieldNames):
     region = models.CharField(max_length=45)
     scenario = models.CharField(default='conservative', max_length=45)
 
-    # Informative fields
+    # Level specific fields
     gross_sales_index = models.FloatField(default=1, blank=True, null=True)
+    seasonal_mix = models.FloatField(default=0, blank=True, null=True)
+    channel_mix = models.FloatField(default=0, blank=True, null=True)
+
+    # Informative fields
     gross_sales = models.FloatField(default=0, blank=True, null=True)
     gross_sales_init = models.FloatField(default=0, blank=True, null=True)
     asp = models.FloatField(default=0, blank=True, null=True)

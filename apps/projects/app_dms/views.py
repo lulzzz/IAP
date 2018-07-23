@@ -30,6 +30,7 @@ from . import serializers
 from . import mixins_view as project_mixins_view
 
 from workflows.core.hierarchy_utils import update_mix_index, convert_percentage
+from workflows.execution.wolford_iap import calls
 
 r"""
 Master tables
@@ -494,6 +495,66 @@ class HistoricalSalesChartAPI(views.ChartAPI):
         self.filter_dict['movementtype'] = 'S'
 
 
+class ConsensusSalesChartAPI(views.ChartAPI):
+    r'''
+    View that provides the chart configuration and data
+    '''
+    # Variable definition
+    model = models.PlanByMonth
+    order_by = 'year_month_name_py'
+    xaxis = 'year_month_name_py'
+    chart_label = 'Sales'
+    aggregation = 'units'
+
+    def get(self, request, format=None, **kwargs):
+        label_list = sorted(list(set(self.model.objects.values_list(self.xaxis, flat=True))))
+        data_list_brand = list()
+        data_list_store = list()
+        data_list_consensus = list()
+
+        for label in label_list:
+            row = self.model.objects.filter(year_month_name_py=label).get()
+
+            if self.kwargs.get('aggregation') == 'value':
+                self.aggregation = 'value'
+                data_list_brand.append(row.value_sales_py_product_category_level)
+                data_list_store.append(row.value_sales_py_store_level)
+                data_list_consensus.append(row.value_sales_py_year_month_level)
+            else:
+                data_list_brand.append(row.unit_sales_py_product_category_level)
+                data_list_store.append(row.unit_sales_py_store_level)
+                data_list_consensus.append(row.unit_sales_py_year_month_level)
+
+        data = {
+            'labels': label_list,
+            'datasets': [
+                {
+                    'label': 'Brand',
+                    'data': data_list_brand,
+                    'backgroundColor': ['#cccccc' for x in list(range(len(label_list)))],
+                    'borderColor': ['#918c8c' for x in list(range(len(label_list)))],
+                    'borderWidth': 2
+                },
+                {
+                    'label': 'Store',
+                    'data': data_list_store,
+                    'backgroundColor': ['#dddddd' for x in list(range(len(label_list)))],
+                    'borderColor': ['#a4a1a1' for x in list(range(len(label_list)))],
+                    'borderWidth': 2
+                },
+                {
+                    'label': 'Consensus',
+                    'data': data_list_consensus,
+                    'backgroundColor': ['#EF8E3F' for x in list(range(len(label_list)))],
+                    'borderColor': ['#c27434' for x in list(range(len(label_list)))],
+                    'borderWidth': 2
+                }
+            ]
+        }
+
+        return JsonResponse(data, safe=False)
+
+
 r"""
 Store Clustering
 """
@@ -780,7 +841,7 @@ class PlanByProductCategoryTable(
                 'unit_sales_py',
                 'value_sales_py',
             ]
-            self.tfoot = '1, 2, 5, 6'
+            self.tfoot = '1, 2, 3, 5, 6'
             self.aggregation_dict = {
                 # 'values': ['dim_channel', 'sales_year', 'sales_season', 'product_division'],
                 'values': ['product_division'],
@@ -843,6 +904,23 @@ class PlanByProductCategoryTable(
         }
         update_mix_index(smart_save_input_dict)
 
+        # Additional calculations (update consensus plan)
+        total_unit_sales_py = self.model.objects.aggregate(Sum('unit_sales_py')).get('unit_sales_py__sum')
+        total_value_sales_py = self.model.objects.aggregate(Sum('value_sales_py')).get('value_sales_py__sum')
+
+        plan_month_queryset = models.PlanByMonth.objects
+        total_unit_sales_ly = self.model.objects.aggregate(Sum('unit_sales_ly')).get('unit_sales_ly__sum')
+        total_value_sales_ly = self.model.objects.aggregate(Sum('value_sales_ly')).get('value_sales_ly__sum')
+
+        for item in plan_month_queryset.all():
+            # unit_sales
+            unit_sales_ly_percentage_by_month = item.unit_sales_ly/total_unit_sales_ly
+            item.unit_sales_py_product_category_level = int(unit_sales_ly_percentage_by_month * total_unit_sales_py)
+            # value_sales
+            value_sales_ly_percentage_by_month = item.value_sales_ly/total_value_sales_ly
+            item.value_sales_py_product_category_level = round(value_sales_ly_percentage_by_month * total_value_sales_py, 2)
+            item.save()
+
 
 class PlanByStoreTable(
     project_mixins_view.DMSFilter,
@@ -889,7 +967,7 @@ class PlanByStoreTable(
                 'unit_sales_py',
                 'value_sales_py',
             ]
-            self.tfoot = '1, 2, 5, 6'
+            self.tfoot = '1, 2, 3, 5, 6'
             self.aggregation_dict = {
                 'values': ['cluster_user'],
                 'logic': {
@@ -956,6 +1034,35 @@ class PlanByStoreTable(
             'data': self.post_filter_dict
         }
         update_mix_index(smart_save_input_dict)
+        smart_save_input_dict = {
+            'model': self.model._meta.db_table,
+            'key_field': self.xaxis, # product_category
+            'levels': ['cluster_user', 'store_code',],
+            'field_reference': {
+                'unit_sales_py_index': 'value_sales_py',
+                'unit_sales_py_mix': 'value_sales_py',
+                'value_sales_ly': 'value_sales_py',
+            },
+            'data': self.post_filter_dict
+        }
+        update_mix_index(smart_save_input_dict)
+
+        # Additional calculations (update consensus plan)
+        total_unit_sales_py = self.model.objects.aggregate(Sum('unit_sales_py')).get('unit_sales_py__sum')
+        total_value_sales_py = self.model.objects.aggregate(Sum('value_sales_py')).get('value_sales_py__sum')
+
+        plan_month_queryset = models.PlanByMonth.objects
+        total_unit_sales_ly = self.model.objects.aggregate(Sum('unit_sales_ly')).get('unit_sales_ly__sum')
+        total_value_sales_ly = self.model.objects.aggregate(Sum('value_sales_ly')).get('value_sales_ly__sum')
+
+        for item in plan_month_queryset.all():
+            # unit_sales
+            unit_sales_ly_percentage_by_month = item.unit_sales_ly/total_unit_sales_ly
+            item.unit_sales_py_store_level = int(unit_sales_ly_percentage_by_month * total_unit_sales_py)
+            # value_sales
+            value_sales_ly_percentage_by_month = item.value_sales_ly/total_value_sales_ly
+            item.value_sales_py_store_level = round(value_sales_ly_percentage_by_month * total_value_sales_py, 2)
+            item.save()
 
 
 class RangeArchitectureTable(
@@ -1029,188 +1136,208 @@ class StrategicSalesPlanTable(views.TableRead):
         # sales_season
         if self.xaxis == 'sales_season':
             self.filter_dict = {
-                'sales_year': 2018
+                'sales_year__gte': 2018
             }
 
-        #     self.header_list = [
-        #         'sales season',
-        #         'gross sales index',
-        #         'gross sales',
-        #         'AVT',
-        #         'gross sales per unit',
-        #         'discounts',
-        #         'returns',
-        #         'net sales',
-        #         'sell through ratio',
-        #         'sell in',
-        #         'markup',
-        #         'gross margin percentage',
-        #         'gross margin',
-        #         'buying budget',
-        #         'GMROI % target',
-        #         'beginning season inventory',
-        #         'ending season inventory',
-        #         'markdown',
-        #     ]
-        #     self.format_list = [
-        #         'skip',
-        #     	'input_key',
-        #     	'input_intcomma_rounding0',
-        #     	'intcomma_rounding0',
-        #     	'intcomma_rounding0',
-        #     	'intcomma_rounding0',
-        #     	'input_intcomma_rounding0',
-        #     	'input_intcomma_rounding0',
-        #     	'intcomma_rounding0',
-        #     	'input_intcomma_rounding0',
-        #     	'intcomma_rounding0',
-        #     	'input_percentagecomma',
-        #     	'percentagemultiplied',
-        #     	'intcomma_rounding0',
-        #     	'intcomma_rounding0',
-        #     	'percentagemultiplied',
-        #     	'intcomma_rounding0',
-        #     	'intcomma_rounding0',
-        #     	'intcomma_rounding0',
-        #     ]
-        #     self.form_field_list = [
-        #         'row_styling',
-        #         'sales_season',
-        #         'gross_sales_index',
-        #         'gross_sales',
-        #         'asp',
-        #         'gross_sales_per_unit',
-        #         'discounts',
-        #         'returns',
-        #         'net_sales',
-        #         'sell_through_ratio',
-        #         'sell_in',
-        #         'markup',
-        #         'gross_margin_percentage',
-        #         'gross_margin',
-        #         'buying_budget',
-        #         'gmroi_percentage_target',
-        #         'beginning_season_inventory',
-        #         'ending_season_inventory',
-        #         'markdown',
-        #     ]
-        #     self.tfoot = '2, 5, 6, 7'
-        #     self.aggregation_dict = {
-        #         # 'values': ['dim_channel', 'sales_year', 'sales_season', 'product_division'],
-        #         'values': ['row_styling', 'sales_season'],
-        #         'logic': {
-        #             'gross_sales_index_min': Min('gross_sales_index'),
-        #             'gross_sales_sum': Sum('gross_sales'),
-        #             'asp_sum': Sum('asp'),
-        #             'gross_sales_per_unit_sum': Sum('gross_sales_per_unit'),
-        #             'discounts_sum': Sum('discounts'),
-        #             'returns_sum': Sum('returns'),
-        #             'net_sales_sum': Sum('net_sales'),
-        #             'sell_through_ratio_min': Min('sell_through_ratio'),
-        #             'sell_in_sum': Sum('sell_in'),
-        #             'markup_sum': Sum('markup'),
-        #             'gross_margin_percentage_sum': Sum('gross_margin_percentage'),
-        #             'gross_margin_sum': Sum('gross_margin'),
-        #             'buying_budget_sum': Sum('buying_budget'),
-        #             'gmroi_percentage_target_sum': Sum('gmroi_percentage_target'),
-        #             'beginning_season_inventory_sum': Sum('beginning_season_inventory'),
-        #             'ending_season_inventory_sum': Sum('ending_season_inventory'),
-        #             'markdown_sum': Sum('markdown'),
-        #         }
-        #     }
-        #
-        # # sales_season
-        # elif self.xaxis == 'dim_channel__name':
-        #     self.filter_dict = {
-        #         'sales_year': 2018
-        #     }
-        #
-        #     self.header_list = [
-        #         'channel',
-        #         'gross sales index',
-        #         'gross sales',
-        #         'AVT',
-        #         'gross sales per unit',
-        #         'discounts',
-        #         'returns',
-        #         'net sales',
-        #         'sell through ratio',
-        #         'sell in',
-        #         'markup',
-        #         'gross margin percentage',
-        #         'gross margin',
-        #         'buying budget',
-        #         'GMROI % target',
-        #         'beginning season inventory',
-        #         'ending season inventory',
-        #         'markdown',
-        #     ]
-        #     self.format_list = [
-        #         'skip',
-        #     	'input_key',
-        #     	'input_intcomma_rounding0',
-        #     	'intcomma_rounding0',
-        #     	'intcomma_rounding0',
-        #     	'intcomma_rounding0',
-        #     	'input_intcomma_rounding0',
-        #     	'input_intcomma_rounding0',
-        #     	'intcomma_rounding0',
-        #     	'input_intcomma_rounding0',
-        #     	'intcomma_rounding0',
-        #     	'input_percentagecomma',
-        #     	'percentagemultiplied',
-        #     	'intcomma_rounding0',
-        #     	'intcomma_rounding0',
-        #     	'percentagemultiplied',
-        #     	'intcomma_rounding0',
-        #     	'intcomma_rounding0',
-        #     	'input_intcomma_rounding0',
-        #     ]
-        #     self.form_field_list = [
-        #         'row_styling',
-        #         'dim_channel__name',
-        #         'gross_sales_index',
-        #         'gross_sales',
-        #         'asp',
-        #         'gross_sales_per_unit',
-        #         'discounts',
-        #         'returns',
-        #         'net_sales',
-        #         'sell_through_ratio',
-        #         'sell_in',
-        #         'markup',
-        #         'gross_margin_percentage',
-        #         'gross_margin',
-        #         'buying_budget',
-        #         'gmroi_percentage_target',
-        #         'beginning_season_inventory',
-        #         'ending_season_inventory',
-        #         'markdown',
-        #     ]
-        #     self.tfoot = '2, 5, 6, 7'
-        #     self.aggregation_dict = {
-        #         # 'values': ['dim_channel', 'sales_year', 'sales_season', 'product_division'],
-        #         'values': ['row_styling', 'dim_channel__name'],
-        #         'logic': {
-        #             'gross_sales_index_min': Min('gross_sales_index'),
-        #             'gross_sales_sum': Sum('gross_sales'),
-        #             'asp_sum': Sum('asp'),
-        #             'gross_sales_per_unit_sum': Sum('gross_sales_per_unit'),
-        #             'discounts_sum': Sum('discounts'),
-        #             'returns_sum': Sum('returns'),
-        #             'net_sales_sum': Sum('net_sales'),
-        #             'sell_through_ratio_min': Min('sell_through_ratio'),
-        #             'sell_in_sum': Sum('sell_in'),
-        #             'markup_sum': Sum('markup'),
-        #             'gross_margin_percentage_sum': Sum('gross_margin_percentage'),
-        #             'gross_margin_sum': Sum('gross_margin'),
-        #             'buying_budget_sum': Sum('buying_budget'),
-        #             'gmroi_percentage_target_sum': Sum('gmroi_percentage_target'),
-        #             'beginning_season_inventory_sum': Sum('beginning_season_inventory'),
-        #             'ending_season_inventory_sum': Sum('ending_season_inventory'),
-        #             'markdown_sum': Sum('markdown'),
-        #         }
-        #     }
+            self.header_list = [
+                'plan year',
+                'sales season',
+                'seasonal mix',
+                'gross sales',
+                'discounts',
+                'returns',
+                'net sales',
+                'ASP',
+                'gross sales per unit',
+                'sell-through ratio',
+                'sell-in',
+                'mark-up',
+                'gross margin %',
+                'gross margin value',
+                'buying budget',
+                'GMROI % target',
+                'beginning season inventory',
+                'markdown',
+                'ending season inventory',
+                'average cost of inventory',
+                'intake beginning of season',
+            ]
+            self.form_field_list = [
+                'row_styling',
+                'sales_year',
+                'region',
+                'gross_sales_index',
+                'gross_sales',
+                'discounts',
+                'returns',
+                'net_sales',
+                'asp',
+                'gross_sales_per_unit',
+                'sell_through_ratio',
+                'sell_in',
+                'markup',
+                'gross_margin_percentage',
+                'gross_margin',
+                'buying_budget',
+                'gmroi_percentage_target',
+                'beginning_season_inventory',
+                'markdown',
+                'ending_season_inventory',
+                'average_cost_of_inventory',
+                'intake_beginning_of_season',
+            ]
+            self.format_list = [
+                'skip',
+            	'input_key', # sales_year
+            	'input_key', # sales_season
+            	'input_percentagecomma', # seasonal_mix
+            	'intcomma_rounding0', # gross_sales
+            	'input_intcomma_rounding0', # discounts
+            	'input_intcomma_rounding0', # returns
+                'intcomma_rounding0', # net_sales
+                'intcomma_rounding0', # asp
+            	'intcomma_rounding0', # gross_sales_per_unit
+                'input_intcomma_rounding0', # sell_through_ratio
+            	'intcomma_rounding0', # sell_in
+            	'input_intcomma_rounding0', # markup
+            	'input_percentagecomma', # gross_margin_percentage
+            	'intcomma_rounding0', # gross_magin_value
+            	'intcomma_rounding0', # buying_budget
+            	'input_percentagecomma', # gmroi_percentage_target
+            	'intcomma_rounding0', # beginning_season_inventory
+            	'input_intcomma_rounding0', # markdown
+            	'intcomma_rounding0', # ending_season_inventory
+                'intcomma_rounding0', # average_cost_of_inventory
+                'intcomma_rounding0', # intake_beginning_of_season
+            ]
+            self.tfoot = '3, 4, 5, 6, 13, 14, 16, 17, 18, 20'
+            self.aggregation_dict = {
+                'values': ['row_styling', 'sales_year', 'sales_season'],
+                'logic': {
+                    'seasonal_mix_min': Min('seasonal_mix'), # input
+                    'gross_sales_sum': Sum('gross_sales'),
+                    'discounts_sum': Sum('discounts'), # input
+                    'returns_sum': Sum('returns'), # input
+                    'net_sales_sum': Sum('net_sales'),
+                    'asp_sum': Sum('asp'),
+                    'gross_sales_per_unit_sum': Sum('gross_sales_per_unit'),
+                    'sell_through_ratio_min': Min('sell_through_ratio'), # input
+                    'sell_in_sum': Sum('sell_in'),
+                    'markup_sum': Max('markup'), # input
+                    'gross_margin_percentage_sum': Max('gross_margin_percentage'),
+                    'gross_margin_sum': Sum('gross_margin'),
+                    'buying_budget_sum': Sum('buying_budget'),
+                    'gmroi_percentage_target_sum': Max('gmroi_percentage_target'),
+                    'beginning_season_inventory_sum': Sum('beginning_season_inventory'),
+                    'markdown_sum': Sum('markdown'),
+                    'ending_season_inventory_sum': Sum('ending_season_inventory'),
+                    'average_cost_of_inventory': Sum('average_cost_of_inventory'),
+                    'intake_beginning_of_season': Sum('intake_beginning_of_season'),
+                }
+            }
+
+        # sales_season
+        elif self.xaxis == 'dim_channel__name':
+            self.filter_dict = {
+                'sales_year__gte': 2018
+            }
+
+            self.header_list = [
+                'plan year',
+                'sales season',
+                'channel mix',
+                'gross sales',
+                'discounts',
+                'returns',
+                'net sales',
+                'ASP',
+                'gross sales per unit',
+                'sell-through ratio',
+                'sell-in',
+                'mark-up',
+                'gross margin %',
+                'gross margin value',
+                'buying budget',
+                'GMROI % target',
+                'beginning season inventory',
+                'markdown',
+                'ending season inventory',
+                'average cost of inventory',
+                'intake beginning of season',
+            ]
+            self.form_field_list = [
+                'row_styling',
+                'sales_year',
+                'channel',
+                'gross_sales_index',
+                'gross_sales',
+                'discounts',
+                'returns',
+                'net_sales',
+                'asp',
+                'gross_sales_per_unit',
+                'sell_through_ratio',
+                'sell_in',
+                'markup',
+                'gross_margin_percentage',
+                'gross_margin',
+                'buying_budget',
+                'gmroi_percentage_target',
+                'beginning_season_inventory',
+                'markdown',
+                'ending_season_inventory',
+                'average_cost_of_inventory',
+                'intake_beginning_of_season',
+            ]
+            self.format_list = [
+                'skip',
+            	'input_key', # sales_year
+            	'input_key', # sales_season
+            	'input_percentagecomma', # channel_mix
+            	'intcomma_rounding0', # gross_sales
+            	'input_intcomma_rounding0', # discounts
+            	'input_intcomma_rounding0', # returns
+                'intcomma_rounding0', # net_sales
+                'intcomma_rounding0', # asp
+            	'intcomma_rounding0', # gross_sales_per_unit
+                'input_intcomma_rounding0', # sell_through_ratio
+            	'intcomma_rounding0', # sell_in
+            	'input_intcomma_rounding0', # markup
+            	'input_percentagecomma', # gross_margin_percentage
+            	'intcomma_rounding0', # gross_magin_value
+            	'intcomma_rounding0', # buying_budget
+            	'input_percentagecomma', # gmroi_percentage_target
+            	'intcomma_rounding0', # beginning_season_inventory
+            	'input_intcomma_rounding0', # markdown
+            	'intcomma_rounding0', # ending_season_inventory
+                'intcomma_rounding0', # average_cost_of_inventory
+                'intcomma_rounding0', # intake_beginning_of_season
+            ]
+            self.tfoot = '3, 4, 5, 6, 13, 14, 16, 17, 18, 20'
+            self.aggregation_dict = {
+                'values': ['row_styling', 'sales_year', 'dim_channel__name'],
+                'logic': {
+                    'channel_mix_min': Min('channel_mix'), # input
+                    'gross_sales_sum': Sum('gross_sales'),
+                    'discounts_sum': Sum('discounts'), # input
+                    'returns_sum': Sum('returns'), # input
+                    'net_sales_sum': Sum('net_sales'),
+                    'asp_sum': Sum('asp'),
+                    'gross_sales_per_unit_sum': Sum('gross_sales_per_unit'),
+                    'sell_through_ratio_min': Min('sell_through_ratio'), # input
+                    'sell_in_sum': Sum('sell_in'),
+                    'markup_sum': Max('markup'), # input
+                    'gross_margin_percentage_sum': Max('gross_margin_percentage'),
+                    'gross_margin_sum': Sum('gross_margin'),
+                    'buying_budget_sum': Sum('buying_budget'),
+                    'gmroi_percentage_target_sum': Max('gmroi_percentage_target'),
+                    'beginning_season_inventory_sum': Sum('beginning_season_inventory'),
+                    'markdown_sum': Sum('markdown'),
+                    'ending_season_inventory_sum': Sum('ending_season_inventory'),
+                    'average_cost_of_inventory': Sum('average_cost_of_inventory'),
+                    'intake_beginning_of_season': Sum('intake_beginning_of_season'),
+                }
+            }
 
         # sales_year and region
         elif self.xaxis == 'sales_year':
@@ -1275,7 +1402,7 @@ class StrategicSalesPlanTable(views.TableRead):
                 'input_intcomma_rounding0', # sell_through_ratio
             	'intcomma_rounding0', # sell_in
             	'input_intcomma_rounding0', # markup
-            	'percentagemultiplied', # gross_margin_percentage
+            	'input_percentagecomma', # gross_margin_percentage
             	'intcomma_rounding0', # gross_magin_value
             	'intcomma_rounding0', # buying_budget
             	'input_percentagecomma', # gmroi_percentage_target
@@ -1285,7 +1412,7 @@ class StrategicSalesPlanTable(views.TableRead):
                 'intcomma_rounding0', # average_cost_of_inventory
                 'intcomma_rounding0', # intake_beginning_of_season
             ]
-            self.tfoot = '3, 4, 5, 6, 7, 9'
+            self.tfoot = '3, 4, 5, 6, 13, 14, 16, 17, 18, 20'
             self.aggregation_dict = {
                 'values': ['row_styling', 'sales_year', 'region'],
                 'logic': {
@@ -1313,28 +1440,49 @@ class StrategicSalesPlanTable(views.TableRead):
 
     def post_action(self):
         # Prepare POST data
+        empty_list = [None for v in self.post_filter_dict.get('sales_year')]
         sales_year_list = self.post_filter_dict.get('sales_year')
-        region_list = self.post_filter_dict.get('region')
-        gross_sales_index_list = self.post_filter_dict.get('gross_sales_index')
+        sales_season_list = self.post_filter_dict.get('sales_season', empty_list)
+        region_list = self.post_filter_dict.get('region', empty_list)
+        channel_list = self.post_filter_dict.get('channel', empty_list)
+        seasonal_mix_list = self.post_filter_dict.get('seasonal_mix', empty_list)
+        channel_mix_list = self.post_filter_dict.get('channel_mix', empty_list)
+        gross_sales_index_list = self.post_filter_dict.get('gross_sales_index', empty_list)
         discounts_list = self.post_filter_dict.get('discounts')
         returns_list = self.post_filter_dict.get('returns')
         sell_through_ratio_list = self.post_filter_dict.get('sell_through_ratio')
         markup_list = self.post_filter_dict.get('markup')
+        gross_margin_percentage_list = self.post_filter_dict.get('gross_margin_percentage')
         gmroi_percentage_target_list = self.post_filter_dict.get('gmroi_percentage_target')
         markdown_list = self.post_filter_dict.get('markdown')
 
-        for sales_year, region, gross_sales_index, discounts, returns, sell_through_ratio, markup, gmroi_percentage_target, markdown in zip(
+        for sales_year, sales_season, region, channel, seasonal_mix, channel_mix, gross_sales_index, discounts, returns, sell_through_ratio, markup, gross_margin_percentage, gmroi_percentage_target, markdown in zip(
             sales_year_list,
+            sales_season_list,
             region_list,
+            channel_list,
+            seasonal_mix_list,
+            channel_mix_list,
             gross_sales_index_list,
             discounts_list,
             returns_list,
             sell_through_ratio_list,
             markup_list,
+            gross_margin_percentage_list,
             gmroi_percentage_target_list,
             markdown_list
         ):
-            high_level_queryset = self.model.objects.filter(sales_year=sales_year, region=region)
+
+            if region:
+                high_level_queryset = self.model.objects.filter(sales_year=sales_year, region=region)
+            elif sales_season:
+                high_level_queryset = self.model.objects.filter(sales_year=sales_year, sales_season=sales_season)
+            elif channel:
+                high_level_queryset = self.model.objects.filter(sales_year=sales_year, channel=channel)
+            else:
+                break
+
+            sum_gross_sales_init = high_level_queryset.aggregate(Sum('gross_sales_init')).get('gross_sales_init__sum')
             sum_discounts = high_level_queryset.aggregate(Sum('discounts')).get('discounts__sum')
             sum_returns = high_level_queryset.aggregate(Sum('returns')).get('returns__sum')
             sum_markdown = high_level_queryset.aggregate(Sum('markdown')).get('markdown__sum')
@@ -1365,12 +1513,26 @@ class StrategicSalesPlanTable(views.TableRead):
                 else:
                     low_level_queryset.markdown = int(markdown.replace(',', '')) / high_level_queryset.count()
 
-                # gross_sales_index
-                low_level_queryset.gross_sales_index = int(gross_sales_index.replace(',', ''))
+                if sum_gross_sales_init > 0:
+                    # gross_sales_index
+                    if gross_sales_index:
+                        low_level_queryset.gross_sales_index = int(gross_sales_index.replace(',', ''))
+                    # seasonal_mix
+                    if seasonal_mix:
+                        low_level_queryset.seasonal_mix = convert_percentage(seasonal_mix.replace(',', ''))
+                    # seasonal_mix
+                    if channel_mix:
+                        low_level_queryset.channel_mix = convert_percentage(channel_mix.replace(',', ''))
+
+                # gross_sales
+                low_level_queryset.gross_sales = sum_gross_sales_init * low_level_queryset.gross_sales_index * low_level_queryset.seasonal_mix * low_level_queryset.channel_mix
+
                 # sell_through_ratio
                 low_level_queryset.sell_through_ratio = int(sell_through_ratio.replace(',', ''))
                 # markup
                 low_level_queryset.markup = int(markup.replace(',', ''))
+                # gross_margin_percentage
+                low_level_queryset.gross_margin_percentage = convert_percentage(gross_margin_percentage.replace(',', ''))
                 # gmroi_percentage_target
                 low_level_queryset.gmroi_percentage_target = convert_percentage(gmroi_percentage_target.replace(',', ''))
 
@@ -1379,12 +1541,12 @@ class StrategicSalesPlanTable(views.TableRead):
 
         # Additional calculations
         for item in self.model.objects.all():
-            item.net_sales = item.gross_sales - item.discounts - item.returns
             item.gross_sales = item.gross_sales_init * item.gross_sales_index
+            item.net_sales = item.gross_sales - item.discounts - item.returns
             item.sell_in = item.net_sales * item.sell_through_ratio
-            item.gross_margin_value = item.net_sales * item.gross_margin_percentage
-            item.gross_sales_per_unit = item.net_sales / item.asp
-            item.buying_budget = item.sell_in * item.markup
+            item.gross_margin = item.net_sales * item.gross_margin_percentage
+            item.gross_sales_per_unit = item.gross_sales / item.asp
+            item.buying_budget = item.sell_in / item.markup if item.markup > 0 else item.sell_in
             item.beginning_season_inventory = 0
             item.ending_season_inventory = item.beginning_season_inventory - item.net_sales - item.markdown
             item.save()
@@ -1564,3 +1726,42 @@ class DownloadScreen(
                     'position_left': True,
                 }
             }
+
+
+class ConsolidatedPlanPivotTable(
+    project_mixins_view.DMSFilter,
+    views.PivotTableAPI
+):
+    r"""
+    View that shows the content of the pivot table
+    """
+
+    model = models.PlanByMonthProductCategoryStore
+    header_dict = {
+        'year_month_name_py': 'month PY',
+        'cluster_user': 'cluster',
+        'dim_store__store_name': 'store name',
+        'dim_store__dim_location__country': 'store country',
+        'product_category': 'product category',
+        'product_division': 'product division',
+        'unit_sales_py_sum': 'unit sales',
+        'value_sales_py_sum': 'value sales',
+    }
+    aggregation_dict = {
+        'values': [
+            'year_month_name_py',
+            'cluster_user',
+            'dim_store__store_name',
+            'dim_store__dim_location__country',
+            'product_category',
+            'product_division',
+        ],
+        'logic': {
+            'unit_sales_py_sum': Sum('unit_sales_py'),
+            'value_sales_py_sum': Sum('value_sales_py'),
+        }
+    }
+
+    def set_filter_dict(self):
+        self.filter_dict = dict()
+        # self.filter_dict['dim_iapfilter'] = self.dim_iapfilter

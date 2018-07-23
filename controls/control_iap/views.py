@@ -297,7 +297,7 @@ class BaseView(
             'pretty_checkbox',
             'daterangepicker',
             'selectpicker',
-            # 'pivottable',
+            'pivottable',
         ]
 
         js_list = [
@@ -874,6 +874,26 @@ class SalesPlanningViewConsensus(ContentView, mixins_view.SecurityModelNameMixin
                         ],
                     }
             },
+            {
+                'row_start': True,
+                'title': 'Unit Sales',
+                'description': 'Refresh the chart after updating a plan.',
+                'type': 'bar',
+                'height': 350,
+                'url': reverse_lazy('chartjs'),
+                'url_action': reverse_lazy('consensus_sales_chart_api', kwargs={'aggregation': 'units'}),
+                'width': 6,
+            },
+            {
+                'row_end': True,
+                'title': 'Value Sales',
+                'description': 'Refresh the chart after updating a plan.',
+                'type': 'bar',
+                'height': 350,
+                'url': reverse_lazy('chartjs'),
+                'url_action': reverse_lazy('consensus_sales_chart_api', kwargs={'aggregation': 'value'}),
+                'width': 6,
+            },
         ]
     }
 
@@ -974,9 +994,15 @@ class SalesPlanningViewConsolidated(ContentView, mixins_view.SecurityModelNameMi
                 'full_row': True,
                 'title': 'Consolidated Plan',
                 'subtitle': 'pivot table',
-                'type': 'table_read',
-                'url': None,
+                'type': 'pivottable',
+                'url': reverse_lazy('pivottablejs'),
+                'url_action': reverse_lazy('consolidated_plan_pivottable'),
+                'pivottable_cols': 'month PY',
+                'pivottable_rows': 'cluster,product division',
+                'pivottable_vals': 'unit sales',
+                'renderer_name': 'Heatmap',
                 'width': 12,
+                'overflow': 'auto',
             },
         ]
     }
