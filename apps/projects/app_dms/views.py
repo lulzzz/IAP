@@ -30,7 +30,7 @@ from . import serializers
 from . import mixins_view as project_mixins_view
 
 from workflows.core.hierarchy_utils import update_mix_index, convert_percentage
-# from workflows.execution.wolford_iap import calls
+from workflows.execution.wolford_iap import calls
 
 r"""
 Master tables
@@ -1640,13 +1640,22 @@ class IAPFilterUserUpdate(
         return True
 
 
-class StoredProcedureAPI(mixins_apiview.StoredProcedureAPI):
+class StoredProcedureAPI(
+    project_mixins_view.DMSFilter,
+    mixins_apiview.StoredProcedureAPI
+):
     r"""
     View that runs the RPC
     """
 
     def get_model_obj(self, param):
-        return getattr(calls, param)()
+        if param == 'generate_consolidated_plan':
+            self.filter_dict = dict()
+            self.init_class_dict_mixin()
+            file_path_abs = os.path.join(cp.UPLOAD_URL_ABS, r'''plans''', self.consolidated_plan_file)
+            calls.generate_consolidated_plan(self.dim_iapfilter, file_path_abs)
+        else:
+            return getattr(calls, param)()
 
 
 class StoredProcedureList(views.TableProcedure, mixins_view.SecurityModelNameMixin):
@@ -1705,10 +1714,8 @@ class DownloadScreen(
     def get_context_dict(self, request):
 
         # Get file name
-        file_name = 'Consolidated Plan - ' + self.dim_iapfilter_label + '.xlsx'
-        file_path_abs = os.path.join(cp.UPLOAD_URL_ABS, r'''plans''', file_name)
-        file_path_rel = os.path.join(cp.UPLOAD_URL, r'''plans''', file_name)
-        print(file_path_abs)
+        file_path_abs = os.path.join(cp.UPLOAD_URL_ABS, r'''plans''', self.consolidated_plan_file)
+        file_path_rel = os.path.join(cp.UPLOAD_URL, r'''plans''', self.consolidated_plan_file)
 
         # If the Excel file exists for download
         if os.path.isfile(file_path_abs):

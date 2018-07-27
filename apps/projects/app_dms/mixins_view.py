@@ -33,5 +33,6 @@ class DMSFilter():
         self.dim_iapfilter = dim_iapfilter_queryset.id
         self.dim_channel_name = dim_iapfilter_queryset.dim_channel.name
         self.dim_iapfilter_label = dim_iapfilter_queryset.get_label()
+        self.consolidated_plan_file = 'Consolidated Plan - ' + self.dim_iapfilter_label + '.xlsx'
 
         self.filter_dict['dim_iapfilter'] = self.dim_iapfilter

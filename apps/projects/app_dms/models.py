@@ -692,17 +692,33 @@ class RangeArchitecture(models.Model, mixins_model.ModelFormFieldNames):
 
     # Informative fields
     product_division = models.CharField(verbose_name='product group', max_length=150)
-    product_essential_trend = models.CharField(verbose_name='essential trend', max_length=100, blank=True, null=True)
-    product_basic_fashion = models.CharField(verbose_name='basic fashion', max_length=100, blank=True, null=True)
+
+    #
+    # Range width
+    #
+
+    # LY
+    range_width_style_ly_essential_basic = models.IntegerField(verbose_name='range width style level LY essential basic', blank=True, null=True)
+    range_width_style_ly_essential_fashion = models.IntegerField(verbose_name='range width style level LY essential fashion', blank=True, null=True)
+    range_width_style_ly_trend_basic = models.IntegerField(verbose_name='range width style level LY trend basic', blank=True, null=True)
+    range_width_style_ly_trend_fashion = models.IntegerField(verbose_name='range width style level LY trend fashion', blank=True, null=True)
+    range_width_style_ly_total = models.IntegerField(verbose_name='range width style level LY total', blank=True, null=True)
+
+    range_width_style_colour_ly_total = models.IntegerField(verbose_name='range width style-colour level LY', blank=True, null=True)
+
+    # PY
+    range_width_style_py = models.FloatField(verbose_name='range width style level PY', blank=True, null=True)
 
     # LY fields
+
+
     range_depth_ly = models.IntegerField(verbose_name='range depth style level LY', blank=True, null=True)
-    range_width_style_ly = models.IntegerField(verbose_name='range width style level LY', blank=True, null=True)
-    range_width_style_colour_ly = models.IntegerField(verbose_name='range width style-colour level LY', blank=True, null=True)
+
+    range_depth_ly = models.IntegerField(verbose_name='range depth style level LY', blank=True, null=True)
 
     # PY fields calculated
     range_depth_py = models.IntegerField(verbose_name='range depth style level PY', blank=True, null=True)
-    range_width_style_py = models.FloatField(verbose_name='range width style level PY', blank=True, null=True)
+
 
     # Frontend display
     form_field_list = [
