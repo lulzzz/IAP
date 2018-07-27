@@ -91,6 +91,9 @@
                             {% elif context_dict.format_list|index:forloop.counter0 == 'intcomma_rounding0' %}
                                 {{ col|intcomma_rounding0 }}
 
+                            {% elif context_dict.format_list|index:forloop.counter0 == 'strong_intcomma_rounding0' %}
+                                <strong>{{ col|intcomma_rounding0 }}</strong>
+
                             {% elif context_dict.format_list|index:forloop.counter0 == 'percentagecomma' %}
                                 {{ col|percentagecomma }}
 

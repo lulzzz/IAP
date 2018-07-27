@@ -693,44 +693,125 @@ class RangeArchitecture(models.Model, mixins_model.ModelFormFieldNames):
     # Informative fields
     product_division = models.CharField(verbose_name='product group', max_length=150)
 
-    #
-    # Range width
-    #
+    # range width - LY style level
+    range_width_style_ly_essential_basic = models.IntegerField(verbose_name='range width style level LY essential basic', blank=True, null=True, default=0)
+    range_width_style_ly_essential_fashion = models.IntegerField(verbose_name='range width style level LY essential fashion', blank=True, null=True, default=0)
+    range_width_style_ly_trend_basic = models.IntegerField(verbose_name='range width style level LY trend basic', blank=True, null=True, default=0)
+    range_width_style_ly_trend_fashion = models.IntegerField(verbose_name='range width style level LY trend fashion', blank=True, null=True, default=0)
+    range_width_style_ly_total = models.IntegerField(verbose_name='style count LY', blank=True, null=True, default=0)
 
-    # LY
-    range_width_style_ly_essential_basic = models.IntegerField(verbose_name='range width style level LY essential basic', blank=True, null=True)
-    range_width_style_ly_essential_fashion = models.IntegerField(verbose_name='range width style level LY essential fashion', blank=True, null=True)
-    range_width_style_ly_trend_basic = models.IntegerField(verbose_name='range width style level LY trend basic', blank=True, null=True)
-    range_width_style_ly_trend_fashion = models.IntegerField(verbose_name='range width style level LY trend fashion', blank=True, null=True)
-    range_width_style_ly_total = models.IntegerField(verbose_name='range width style level LY total', blank=True, null=True)
+    # range width average colour count per style - LY style level (no display)
+    range_width_style_ly_essential_basic_avg_colour_count = models.IntegerField(blank=True, null=True, default=0)
+    range_width_style_ly_essential_fashion_avg_colour_count = models.IntegerField(blank=True, null=True, default=0)
+    range_width_style_ly_trend_basic_avg_colour_count = models.IntegerField(blank=True, null=True, default=0)
+    range_width_style_ly_trend_fashion_avg_colour_count = models.IntegerField(blank=True, null=True, default=0)
 
-    range_width_style_colour_ly_total = models.IntegerField(verbose_name='range width style-colour level LY', blank=True, null=True)
+    # range width - PY style level
+    range_width_style_py_carry_over = models.IntegerField(verbose_name='range width style level PY carry over', blank=True, null=True, default=0)
+    range_width_style_py_essential_basic = models.IntegerField(verbose_name='range width style level PY essential basic', blank=True, null=True, default=0)
+    range_width_style_py_essential_fashion = models.IntegerField(verbose_name='range width style level PY essential fashion', blank=True, null=True, default=0)
+    range_width_style_py_trend_basic = models.IntegerField(verbose_name='range width style level PY trend basic', blank=True, null=True, default=0)
+    range_width_style_py_trend_fashion = models.IntegerField(verbose_name='range width style level PY trend fashion', blank=True, null=True, default=0)
+    range_width_style_py_total = models.IntegerField(verbose_name='style count PY', blank=True, null=True, default=0)
 
-    # PY
-    range_width_style_py = models.FloatField(verbose_name='range width style level PY', blank=True, null=True)
+    # range width - LY style colour level
+    range_width_style_colour_ly_essential_basic = models.IntegerField(verbose_name='range width style-colour level LY essential basic', blank=True, null=True, default=0)
+    range_width_style_colour_ly_essential_fashion = models.IntegerField(verbose_name='range width style-colour level LY essential fashion', blank=True, null=True, default=0)
+    range_width_style_colour_ly_trend_basic = models.IntegerField(verbose_name='range width style-colour level LY trend basic', blank=True, null=True, default=0)
+    range_width_style_colour_ly_trend_fashion = models.IntegerField(verbose_name='range width style-colour level LY trend fashion', blank=True, null=True, default=0)
+    range_width_style_colour_ly_total = models.IntegerField(verbose_name='style-colour count LY', blank=True, null=True, default=0)
 
-    # LY fields
+    # range width - PY style colour level
+    range_width_style_colour_py_carry_over = models.IntegerField(verbose_name='range width style-colour level PY carry over', blank=True, null=True, default=0)
+    range_width_style_colour_py_essential_basic = models.IntegerField(verbose_name='range width style-colour level PY essential basic', blank=True, null=True, default=0)
+    range_width_style_colour_py_essential_fashion = models.IntegerField(verbose_name='range width style-colour level PY essential fashion', blank=True, null=True, default=0)
+    range_width_style_colour_py_trend_basic = models.IntegerField(verbose_name='range width style-colour level PY trend basic', blank=True, null=True, default=0)
+    range_width_style_colour_py_trend_fashion = models.IntegerField(verbose_name='range width style-colour level PY trend fashion', blank=True, null=True, default=0)
+    range_width_style_colour_py_total = models.IntegerField(verbose_name='style-colour count PY', blank=True, null=True, default=0)
 
+    # range sales - LY (no display)
+    range_sales_ly_essential_basic = models.IntegerField(verbose_name='range sales LY essential basic', blank=True, null=True, default=0)
+    range_sales_ly_essential_fashion = models.IntegerField(verbose_name='range sales LY essential fashion', blank=True, null=True, default=0)
+    range_sales_ly_trend_basic = models.IntegerField(verbose_name='range sales LY trend basic', blank=True, null=True, default=0)
+    range_sales_ly_trend_fashion = models.IntegerField(verbose_name='range sales LY trend fashion', blank=True, null=True, default=0)
+    range_sales_ly_total = models.IntegerField(verbose_name='range sales LY total', blank=True, null=True, default=0)
 
-    range_depth_ly = models.IntegerField(verbose_name='range depth style level LY', blank=True, null=True)
+    # range effectiveness - LY
+    range_effectiveness_style_ly_essential_basic = models.IntegerField(verbose_name='range effectiveness style level LY essential basic', blank=True, null=True, default=0)
+    range_effectiveness_style_ly_essential_fashion = models.IntegerField(verbose_name='range effectiveness style level LY essential fashion', blank=True, null=True, default=0)
+    range_effectiveness_style_ly_trend_basic = models.IntegerField(verbose_name='range effectiveness style level LY trend basic', blank=True, null=True, default=0)
+    range_effectiveness_style_ly_trend_fashion = models.IntegerField(verbose_name='range effectiveness style level LY trend fashion', blank=True, null=True, default=0)
+    range_effectiveness_style_ly_total = models.IntegerField(verbose_name='range effectiveness style level LY total', blank=True, null=True, default=0)
 
-    range_depth_ly = models.IntegerField(verbose_name='range depth style level LY', blank=True, null=True)
+    # range effectiveness - PY
+    range_effectiveness_style_py_carry_over = models.IntegerField(verbose_name='range effectiveness style level PY carry over', blank=True, null=True, default=0)
+    range_effectiveness_style_py_essential_basic = models.IntegerField(verbose_name='range effectiveness style level PY essential basic', blank=True, null=True, default=0)
+    range_effectiveness_style_py_essential_fashion = models.IntegerField(verbose_name='range effectiveness style level PY essential fashion', blank=True, null=True, default=0)
+    range_effectiveness_style_py_trend_basic = models.IntegerField(verbose_name='range effectiveness style level PY trend basic', blank=True, null=True, default=0)
+    range_effectiveness_style_py_trend_fashion = models.IntegerField(verbose_name='range effectiveness style level PY trend fashion', blank=True, null=True, default=0)
+    range_effectiveness_style_py_total = models.IntegerField(verbose_name='range effectiveness style level PY total', blank=True, null=True, default=0)
 
-    # PY fields calculated
-    range_depth_py = models.IntegerField(verbose_name='range depth style level PY', blank=True, null=True)
+    # range performance ASP LY
+    range_performance_ly = models.IntegerField(verbose_name='ASP LY', blank=True, null=True, default=0)
 
+    # range performance ASP PY
+    range_performance_py = models.IntegerField(verbose_name='ASP PY', blank=True, null=True, default=0)
 
     # Frontend display
     form_field_list = [
         'product_division',
         'product_category',
-        'product_essential_trend',
-        'product_basic_fashion',
-        'range_width_style_ly',
-        'range_width_style_colour_ly',
-        'range_depth_ly',
-        'range_width_style_py',
-        'range_depth_py',
+
+        # range width - LY style level
+        'range_width_style_ly_essential_basic',
+        'range_width_style_ly_essential_fashion',
+        'range_width_style_ly_trend_basic',
+        'range_width_style_ly_trend_fashion',
+        'range_width_style_ly_total',
+
+        # range width - PY style level
+        'range_width_style_py_carry_over',
+        'range_width_style_py_essential_basic',
+        'range_width_style_py_essential_fashion',
+        'range_width_style_py_trend_basic',
+        'range_width_style_py_trend_fashion',
+        'range_width_style_py_total',
+
+        # range width - LY style colour level
+        'range_width_style_colour_ly_essential_basic',
+        'range_width_style_colour_ly_essential_fashion',
+        'range_width_style_colour_ly_trend_basic',
+        'range_width_style_colour_ly_trend_fashion',
+        'range_width_style_colour_ly_total',
+
+        # range width - PY style colour level
+        'range_width_style_colour_py_carry_over',
+        'range_width_style_colour_py_essential_basic',
+        'range_width_style_colour_py_essential_fashion',
+        'range_width_style_colour_py_trend_basic',
+        'range_width_style_colour_py_trend_fashion',
+        'range_width_style_colour_py_total',
+
+        # range effectiveness - LY
+        'range_effectiveness_style_ly_essential_basic',
+        'range_effectiveness_style_ly_essential_fashion',
+        'range_effectiveness_style_ly_trend_basic',
+        'range_effectiveness_style_ly_trend_fashion',
+        'range_effectiveness_style_ly_total',
+
+        # range effectiveness - PY
+        'range_effectiveness_style_py_carry_over',
+        'range_effectiveness_style_py_essential_basic',
+        'range_effectiveness_style_py_essential_fashion',
+        'range_effectiveness_style_py_trend_basic',
+        'range_effectiveness_style_py_trend_fashion',
+        'range_effectiveness_style_py_total',
+
+        # range performance ASP LY
+        'range_performance_ly',
+
+        # range performance ASP TY
+        'range_performance_py',
     ]
 
     class Meta:

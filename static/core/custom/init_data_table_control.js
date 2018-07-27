@@ -63,8 +63,13 @@ $(document).ready(function() {
                         var intVal = function ( i ) {
 
                             // Extract text from input field
-                            if ( $(i).is('input') ) {
+                            if ($(i).is('input')) {
                                 i = $(i).val();
+                            }
+
+                            // Extract text from strong field
+                            if ($(i).is('strong')) {
+                                i = $(i).text();
                             }
 
                             // Return numeric variable
