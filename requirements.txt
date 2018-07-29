@@ -1,6 +1,7 @@
 mysqlclient
 pymysql
 pandas
+openpyxl
 sqlalchemy
 bleach==1.5.0
 certifi==2017.11.5
