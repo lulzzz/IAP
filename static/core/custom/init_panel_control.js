@@ -12,13 +12,12 @@ $(document).ready(function () {
         // Serialize form data
         if ($(this).hasClass('filter-button')) {
             var x_content = $(this).parent().parent().parent();
+            var post_data = x_content.find('form').first().serialize();
         } else {
             var x_panel = $(this).closest('.x_panel');
             var x_content = x_panel.find('.x_content').first();
-
+            var post_data = x_content.find('form').last().serialize();
         }
-
-        var post_data = x_content.find('form').first().serialize();
 
         // Iterate through all url_load values
         x_content.find('.url_load').each(function() {
