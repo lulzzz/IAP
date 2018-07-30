@@ -1696,6 +1696,7 @@ class RangeAssortmentTable(
 
     form_field_list = None
     format_list = [
+        'input_key', # cluster_user
         None, # product_division
         'input_key', # product_category
         'input_key', # product_essential_trend
@@ -1705,13 +1706,61 @@ class RangeAssortmentTable(
         'input_intcomma_rounding0', # range_width_style_py
         'input_intcomma_rounding0', # range_width_style_colour_py
     ]
-    tfoot = '4, 5, 6, 7'
+    tfoot = '5, 6, 7, 8'
+
+    # Return empty table GET
+    def get(self, request):
+        self.context_dict = {
+            'message': {
+                'text': 'Table will be loaded after clicking the "Refresh" button.',
+                'type': 'info',
+                'position_left': True,
+            }
+        }
+        return self.display(request)
+
+    # Overwrite variables
+    def set_filter_dict(self):
+        print(self.filter_dict)
 
     def post_action(self):
-        # Prepare POST data
-        print('post')
+        cluster_user_list = self.post_filter_dict.get('cluster_user')
+        product_category_list = self.post_filter_dict.get('product_category')
+        product_essential_trend_list = self.post_filter_dict.get('product_essential_trend')
+        product_basic_fashion_list = self.post_filter_dict.get('product_basic_fashion')
 
+        range_width_style_py_list = self.post_filter_dict.get('range_width_style_py')
+        range_width_style_colour_py_list = self.post_filter_dict.get('range_width_style_colour_py')
 
+        for cluster_user, \
+            product_category, \
+            product_essential_trend, \
+            product_basic_fashion, \
+            range_width_style_py, \
+            range_width_style_colour_py, \
+        in zip(
+            cluster_user_list,
+            product_category_list,
+            product_essential_trend_list,
+            product_basic_fashion_list,
+            range_width_style_py_list,
+            range_width_style_colour_py_list,
+        ):
+
+            low_level_queryset = self.model.objects.get(
+                dim_iapfilter=self.dim_iapfilter,
+                product_category=product_category,
+                product_essential_trend=product_essential_trend,
+                product_basic_fashion=product_basic_fashion,
+                cluster_user=cluster_user,
+            )
+
+            # range width - PY style level
+            low_level_queryset.range_width_style_py = int(range_width_style_py.replace(',', ''))
+            low_level_queryset.range_width_style_colour_py = int(range_width_style_colour_py.replace(',', ''))
+
+            # Save to database
+            low_level_queryset.save()
 
 
 class TokenFieldDimProductStyle(views.TokenFieldAPI):

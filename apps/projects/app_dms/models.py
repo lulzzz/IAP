@@ -888,6 +888,7 @@ class RangeAssortment(models.Model, mixins_model.ModelFormFieldNames):
 
     # Frontend display
     form_field_list = [
+        'cluster_user',
         'product_division',
         'product_category',
         'product_essential_trend',

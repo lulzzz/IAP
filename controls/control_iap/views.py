@@ -1107,25 +1107,58 @@ class RangePlanningViewAssortment(ContentView):
     r"""
     View that loads the range planning
     """
+
     # Overwrite variables
-    context_dict = {
-        'title': 'Range Planning',
-        'panel_list': [
-            {
-                'full_row': True,
-                'title': 'Range Assortment',
-                'type': 'table_read',
-                'url': reverse_lazy('range_assortment'),
-                'width': 12,
-                'overflow': 'auto',
-                'footer': {
-                    'button_list': [
-                        'save'
+    def __init__(self):
+        super().__init__()
+        self.js_list.append('init_selectpicker_control')
+
+    def get_context_dict(self, request):
+
+        # Shortcuts
+        filtered_model = models.RangeAssortment.objects
+
+        cluster_user_list_of_dict = list()
+        for idx, item in enumerate(sorted(filtered_model.values_list('cluster_user', flat=True).distinct())):
+            if idx == 0:
+                temp_selected = True
+            else:
+                temp_selected = False
+            temp_dict = {
+                'value': item,
+                'label': item,
+                'selected': temp_selected,
+            }
+            cluster_user_list_of_dict.append(temp_dict)
+
+        return {
+            'title': 'Range Planning',
+            'panel_list': [
+                {
+                    'full_row': True,
+                    'title': 'Range Assortment',
+                    'type': 'table_read',
+                    'url': reverse_lazy('range_assortment'),
+                    'width': 12,
+                    'overflow': 'auto',
+                    'footer': {
+                        'button_list': [
+                            'save'
+                        ],
+                    },
+                    'selectpicker': [
+                        {
+                            'name': 'cluster_user',
+                            'label': 'Cluster',
+                            'live_search': False,
+                            'action_box': False,
+                            'multiple': False,
+                            'values': cluster_user_list_of_dict,
+                        },
                     ],
                 },
-            },
-        ]
-    }
+            ]
+        }
 
 
 class RangePlanningViewMaster(ContentView):
