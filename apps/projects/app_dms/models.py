@@ -948,19 +948,6 @@ class RangeMaster(models.Model, mixins_model.ModelFormFieldNames):
         unique_together = (('dim_iapfilter', 'model_number', 'style_number', 'colour_number'),)
 
 
-# class StagingRangePlan(models.Model):
-#     product_group = models.BigIntegerField(blank=True, null=True)
-#     product_essential_trend = models.TextField(blank=True, null=True)
-#     product_basic_fashion = models.TextField(blank=True, null=True)
-#     product_category = models.TextField(blank=True, null=True)
-#     style_colour_x = models.FloatField(blank=True, null=True)
-#     style = models.BigIntegerField(blank=True, null=True)
-#     style_colour_y = models.BigIntegerField(blank=True, null=True)
-#
-#     class Meta:
-#         managed = False
-
-
 # r"""
 # Buy planning
 # """

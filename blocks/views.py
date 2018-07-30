@@ -68,6 +68,9 @@ class TableRead(BlockView):
     def post_action(self):
         pass
 
+    def pre_action(self):
+        pass
+
     def post_data_processing(self, request):
         # Read POST variables
         for key, values in request.POST.lists():
@@ -96,6 +99,9 @@ class TableRead(BlockView):
         self.post_action()
 
     def get_context_dict(self, request):
+        # pre_action
+        self.pre_action()
+
         # Get model
         model_obj = self.model
 

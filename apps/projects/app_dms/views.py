@@ -1676,9 +1676,47 @@ class RangePlanTable(
     ]
     tfoot = '4, 5, 6, 7'
 
-    def post_action(self):
-        # Prepare POST data
-        pass
+    def pre_action(self):
+
+        # update table based on rangearchitecture
+        for item in self.model.objects.filter(dim_iapfilter=self.dim_iapfilter).all():
+
+            # rangearchitecture fields
+            rangearchitecture = models.RangeArchitecture.objects.get(
+                dim_iapfilter=item.dim_iapfilter,
+                product_category=item.product_category,
+            )
+
+            if item.product_essential_trend == 'E' and item.product_basic_fashion == 'B':
+                item.range_width_style_py_rangearchitecture = rangearchitecture.range_width_style_py_essential_basic
+                item.range_width_style_colour_py_rangearchitecture = rangearchitecture.range_width_style_colour_py_essential_basic
+            if item.product_essential_trend == 'E' and item.product_basic_fashion == 'F':
+                item.range_width_style_py_rangearchitecture = rangearchitecture.range_width_style_py_essential_fashion
+                item.range_width_style_colour_py_rangearchitecture = rangearchitecture.range_width_style_colour_py_essential_fashion
+            if item.product_essential_trend == 'T' and item.product_basic_fashion == 'B':
+                item.range_width_style_py_rangearchitecture = rangearchitecture.range_width_style_py_trend_basic
+                item.range_width_style_colour_py_rangearchitecture = rangearchitecture.range_width_style_colour_py_trend_basic
+            if item.product_essential_trend == 'T' and item.product_basic_fashion == 'F':
+                item.range_width_style_py_rangearchitecture = rangearchitecture.range_width_style_py_trend_fashion
+                item.range_width_style_colour_py_rangearchitecture = rangearchitecture.range_width_style_colour_py_trend_fashion
+
+            # rangemaster fields
+            rangemaster = models.RangeMaster.objects.filter(
+                dim_iapfilter=item.dim_iapfilter,
+                product_category=item.product_category,
+            )
+
+            item.range_width_style_py_rangemaster = rangemaster.filter(
+                product_essential_trend=item.product_essential_trend,
+                product_basic_fashion=item.product_basic_fashion,
+            ).values('style_number').distinct().count()
+
+            item.range_width_style_colour_py_rangemaster = rangemaster.filter(
+                product_essential_trend=item.product_essential_trend,
+                product_basic_fashion=item.product_basic_fashion,
+            ).count()
+
+            item.save()
 
 
 class RangeAssortmentTable(
