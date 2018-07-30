@@ -20,4 +20,4 @@ handler404 = 'apps.standards.app_error.views.handler404'
 handler500 = 'apps.standards.app_error.views.handler500'
 
 # Admin pages
-admin.site.site_header = 'Datacrag Administration'
+admin.site.site_header = 'IAP Administration'

@@ -11,7 +11,7 @@ from rest_framework.views import APIView
 from django.http import JsonResponse
 from django.utils import timezone
 
-from django.db.models import Count, Sum, Min, Max, Q
+from django.db.models import Count, Sum, Min, Max, Avg, Q
 from django.db.models.functions import Lower, Upper
 
 from blocks import views
@@ -841,7 +841,7 @@ class PlanByProductCategoryTable(
                 'unit_sales_py',
                 'value_sales_py',
             ]
-            self.tfoot = '1, 2, 3, 5, 6'
+            self.tfoot = '1, 2, 5, 6'
             self.aggregation_dict = {
                 # 'values': ['dim_channel', 'sales_year', 'sales_season', 'product_division'],
                 'values': ['product_division'],
@@ -967,7 +967,7 @@ class PlanByStoreTable(
                 'unit_sales_py',
                 'value_sales_py',
             ]
-            self.tfoot = '1, 2, 3, 5, 6'
+            self.tfoot = '1, 2, 5, 6'
             self.aggregation_dict = {
                 'values': ['cluster_user'],
                 'logic': {
@@ -1034,18 +1034,18 @@ class PlanByStoreTable(
             'data': self.post_filter_dict
         }
         update_mix_index(smart_save_input_dict)
-        smart_save_input_dict = {
-            'model': self.model._meta.db_table,
-            'key_field': self.xaxis, # product_category
-            'levels': ['cluster_user', 'store_code',],
-            'field_reference': {
-                'unit_sales_py_index': 'value_sales_py',
-                'unit_sales_py_mix': 'value_sales_py',
-                'value_sales_ly': 'value_sales_py',
-            },
-            'data': self.post_filter_dict
-        }
-        update_mix_index(smart_save_input_dict)
+        # smart_save_input_dict = {
+        #     'model': self.model._meta.db_table,
+        #     'key_field': self.xaxis, # product_category
+        #     'levels': ['cluster_user', 'store_code',],
+        #     'field_reference': {
+        #         'unit_sales_py_index': 'value_sales_py',
+        #         'unit_sales_py_mix': 'value_sales_py',
+        #         'value_sales_ly': 'value_sales_py',
+        #     },
+        #     'data': self.post_filter_dict
+        # }
+        # update_mix_index(smart_save_input_dict)
 
         # Additional calculations (update consensus plan)
         total_unit_sales_py = self.model.objects.aggregate(Sum('unit_sales_py')).get('unit_sales_py__sum')
@@ -1294,7 +1294,7 @@ class StrategicSalesPlanTable(views.TableRead):
                 'intcomma_rounding0', # net_sales
                 'intcomma_rounding0', # asp
             	'intcomma_rounding0', # gross_sales_per_unit
-                'input_intcomma_rounding0', # sell_through_ratio
+                'input_percentagecomma', # sell_through_ratio
             	'intcomma_rounding0', # sell_in
             	'input_intcomma_rounding0', # markup
             	'input_percentagecomma', # gross_margin_percentage
@@ -1316,7 +1316,7 @@ class StrategicSalesPlanTable(views.TableRead):
                     'discounts_sum': Sum('discounts'), # input
                     'returns_sum': Sum('returns'), # input
                     'net_sales_sum': Sum('net_sales'),
-                    'asp_sum': Sum('asp'),
+                    'asp_sum': Avg('asp'),
                     'gross_sales_per_unit_sum': Sum('gross_sales_per_unit'),
                     'sell_through_ratio_min': Min('sell_through_ratio'), # input
                     'sell_in_sum': Sum('sell_in'),
@@ -1397,7 +1397,7 @@ class StrategicSalesPlanTable(views.TableRead):
                 'intcomma_rounding0', # net_sales
                 'intcomma_rounding0', # asp
             	'intcomma_rounding0', # gross_sales_per_unit
-                'input_intcomma_rounding0', # sell_through_ratio
+                'input_percentagecomma', # sell_through_ratio
             	'intcomma_rounding0', # sell_in
             	'input_intcomma_rounding0', # markup
             	'input_percentagecomma', # gross_margin_percentage
@@ -1419,7 +1419,7 @@ class StrategicSalesPlanTable(views.TableRead):
                     'discounts_sum': Sum('discounts'), # input
                     'returns_sum': Sum('returns'), # input
                     'net_sales_sum': Sum('net_sales'),
-                    'asp_sum': Sum('asp'),
+                    'asp_sum': Avg('asp'),
                     'gross_sales_per_unit_sum': Sum('gross_sales_per_unit'),
                     'sell_through_ratio_min': Min('sell_through_ratio'), # input
                     'sell_in_sum': Sum('sell_in'),
@@ -1496,7 +1496,7 @@ class StrategicSalesPlanTable(views.TableRead):
                 'intcomma_rounding0', # net_sales
                 'intcomma_rounding0', # asp
             	'intcomma_rounding0', # gross_sales_per_unit
-                'input_intcomma_rounding0', # sell_through_ratio
+                'input_percentagecomma', # sell_through_ratio
             	'intcomma_rounding0', # sell_in
             	'input_intcomma_rounding0', # markup
             	'input_percentagecomma', # gross_margin_percentage
@@ -1518,7 +1518,7 @@ class StrategicSalesPlanTable(views.TableRead):
                     'discounts_sum': Sum('discounts'), # input
                     'returns_sum': Sum('returns'), # input
                     'net_sales_sum': Sum('net_sales'),
-                    'asp_sum': Sum('asp'),
+                    'asp_sum': Avg('asp'),
                     'gross_sales_per_unit_sum': Sum('gross_sales_per_unit'),
                     'sell_through_ratio_min': Min('sell_through_ratio'), # input
                     'sell_in_sum': Sum('sell_in'),
@@ -1625,7 +1625,7 @@ class StrategicSalesPlanTable(views.TableRead):
                 low_level_queryset.gross_sales = sum_gross_sales_init * low_level_queryset.gross_sales_index * low_level_queryset.seasonal_mix * low_level_queryset.channel_mix
 
                 # sell_through_ratio
-                low_level_queryset.sell_through_ratio = int(sell_through_ratio.replace(',', ''))
+                low_level_queryset.sell_through_ratio = convert_percentage(sell_through_ratio.replace(',', ''))
                 # markup
                 low_level_queryset.markup = int(markup.replace(',', ''))
                 # gross_margin_percentage

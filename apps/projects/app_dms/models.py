@@ -327,13 +327,20 @@ class DimIAPCycle(models.Model):
     r'''
     Model for storing an entire sales cycle
     '''
-    dim_iapfilter = models.ForeignKey(DimIAPFilter, on_delete=models.CASCADE, default=1)
-    dim_iapstep = models.ForeignKey(DimIAPStep, on_delete=models.CASCADE)
-    is_completed = models.BooleanField(default=False)
-    completion_dt = models.DateTimeField(blank=True, null=True)
+    dim_iapfilter = models.ForeignKey(DimIAPFilter, on_delete=models.CASCADE, default=1, verbose_name='IAP Filter')
+    dim_iapstep = models.ForeignKey(DimIAPStep, on_delete=models.CASCADE, verbose_name='IAP Step')
+    is_completed = models.BooleanField(default=False, verbose_name='Status')
+    completion_dt = models.DateTimeField(blank=True, null=True, verbose_name='Completion Date')
 
     class Meta:
+        verbose_name = 'IAP Cycle'
         unique_together = (('dim_iapfilter', 'dim_iapstep'),)
+
+    def __str__(self):
+        return self.dim_iapfilter.dim_channel.name + ' ' + \
+        str(self.dim_iapfilter.sales_year) + ' ' + \
+        self.dim_iapfilter.sales_season + ' ' + \
+        ' -> Step ' + str(self.dim_iapstep.position)
 
 r"""
 Store clustering
