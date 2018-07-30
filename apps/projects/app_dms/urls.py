@@ -60,6 +60,8 @@ urlpatterns = [
 
     # Range planning
     url(r'^range_architecture$', views.RangeArchitectureTable.as_view(), name='range_architecture'),
+    url(r'^range_plan$', views.RangePlanTable.as_view(), name='range_plan'),
+    url(r'^range_assortment$', views.RangeAssortmentTable.as_view(), name='range_assortment'),    
 
     # Buy planning
 

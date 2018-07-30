@@ -818,6 +818,91 @@ class RangeArchitecture(models.Model, mixins_model.ModelFormFieldNames):
         unique_together = (('dim_iapfilter', 'product_category'),)
 
 
+class RangePlan(models.Model, mixins_model.ModelFormFieldNames):
+    r'''
+    Model for range architecture
+    '''
+
+    # Unique fields
+    id = models.AutoField(primary_key=True)
+
+    # Unique fields
+    dim_iapfilter = models.ForeignKey(DimIAPFilter, on_delete=models.CASCADE, default=1)
+    product_category = models.CharField(verbose_name='product category', max_length=150)
+    product_essential_trend = models.CharField(verbose_name='essential trend', max_length=100, blank=True, null=True)
+    product_basic_fashion = models.CharField(verbose_name='basic fashion', max_length=100, blank=True, null=True)
+
+    # Attribute fields
+    product_division = models.CharField(verbose_name='product group', max_length=150)
+
+    # From range architecture
+    range_width_style_py_rangearchitecture = models.IntegerField(verbose_name='# of style codes from range architecture', blank=True, null=True, default=0)
+    range_width_style_colour_py_rangearchitecture = models.IntegerField(verbose_name='# of style-colour codes from range architecture', blank=True, null=True, default=0)
+
+    # From ERP (range master handsontable)
+    range_width_style_py_rangemaster = models.IntegerField(verbose_name='# of style codes from range master', blank=True, null=True, default=0)
+    range_width_style_colour_py_rangemaster = models.IntegerField(verbose_name='# of style-colour codes from range master', blank=True, null=True, default=0)
+
+    # Frontend display
+    form_field_list = [
+        'product_division',
+        'product_category',
+        'product_essential_trend',
+        'product_basic_fashion',
+
+        'range_width_style_py_rangearchitecture',
+        'range_width_style_colour_py_rangearchitecture',
+        'range_width_style_py_rangemaster',
+        'range_width_style_colour_py_rangemaster',
+    ]
+
+    class Meta:
+        unique_together = (('dim_iapfilter', 'product_category', 'product_essential_trend', 'product_basic_fashion'),)
+
+
+class RangeAssortment(models.Model, mixins_model.ModelFormFieldNames):
+    r'''
+    Model for range architecture
+    '''
+
+    # Unique fields
+    id = models.AutoField(primary_key=True)
+
+    # Unique fields
+    dim_iapfilter = models.ForeignKey(DimIAPFilter, on_delete=models.CASCADE, default=1)
+    cluster_user = models.CharField(max_length=2)
+    product_category = models.CharField(verbose_name='product category', max_length=150)
+    product_essential_trend = models.CharField(verbose_name='essential trend', max_length=100, blank=True, null=True)
+    product_basic_fashion = models.CharField(verbose_name='basic fashion', max_length=100, blank=True, null=True)
+
+    # Attribute fields
+    product_division = models.CharField(verbose_name='product group', max_length=150)
+
+    # From range architecture (LY)
+    range_width_style_ly_storecluster = models.IntegerField(verbose_name='# of style codes LY from store clustering', blank=True, null=True, default=0)
+    range_width_style_colour_ly_storecluster = models.IntegerField(verbose_name='# of style-colour codes LY from store clustering', blank=True, null=True, default=0)
+
+    # User input (PY)
+    range_width_style_py = models.IntegerField(verbose_name='# of style codes PY', blank=True, null=True, default=0)
+    range_width_style_colour_py = models.IntegerField(verbose_name='# of style-colour codes PY', blank=True, null=True, default=0)
+
+    # Frontend display
+    form_field_list = [
+        'product_division',
+        'product_category',
+        'product_essential_trend',
+        'product_basic_fashion',
+
+        'range_width_style_ly_storecluster',
+        'range_width_style_colour_ly_storecluster',
+        'range_width_style_py',
+        'range_width_style_colour_py',
+    ]
+
+    class Meta:
+        unique_together = (('dim_iapfilter', 'cluster_user', 'product_category', 'product_essential_trend', 'product_basic_fashion'),)
+
+
 class RangeMaster(models.Model, mixins_model.ModelFormFieldNames):
     r'''
     Model for range architecture

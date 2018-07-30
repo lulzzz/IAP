@@ -201,14 +201,24 @@ class BaseView(
                                     'sub_values':
                                     [
                                         {
+                                            'name': 'range_planning_tab_master',
+                                            'label': 'Range Master (ERP)',
+                                            'url': reverse_lazy('range_planning_tab_master').replace('/', '#', 1),
+                                        },
+                                        {
                                             'name': 'range_planning_tab_architecture',
                                             'label': 'Range Architecture',
                                             'url': reverse_lazy('range_planning_tab_architecture').replace('/', '#', 1),
                                         },
                                         {
-                                            'name': 'range_planning_tab_master',
-                                            'label': 'Range Master',
-                                            'url': reverse_lazy('range_planning_tab_master').replace('/', '#', 1),
+                                            'name': 'range_planning_tab_plan',
+                                            'label': 'Range Plan',
+                                            'url': reverse_lazy('range_planning_tab_plan').replace('/', '#', 1),
+                                        },
+                                        {
+                                            'name': 'range_planning_tab_assortment',
+                                            'label': 'Range Assortment',
+                                            'url': reverse_lazy('range_planning_tab_assortment').replace('/', '#', 1),
                                         },
                                     ]
                                 },
@@ -1056,6 +1066,56 @@ class RangePlanningViewArchitecture(ContentView):
                 'title': 'Range Architecture',
                 'type': 'table_read',
                 'url': reverse_lazy('range_architecture'),
+                'width': 12,
+                'overflow': 'auto',
+                'footer': {
+                    'button_list': [
+                        'save'
+                    ],
+                },
+            },
+        ]
+    }
+
+
+class RangePlanningViewPlan(ContentView):
+    r"""
+    View that loads the range planning
+    """
+    # Overwrite variables
+    context_dict = {
+        'title': 'Range Planning',
+        'panel_list': [
+            {
+                'full_row': True,
+                'title': 'Range Plan',
+                'type': 'table_read',
+                'url': reverse_lazy('range_plan'),
+                'width': 12,
+                'overflow': 'auto',
+                'footer': {
+                    'button_list': [
+                        'save'
+                    ],
+                },
+            },
+        ]
+    }
+
+
+class RangePlanningViewAssortment(ContentView):
+    r"""
+    View that loads the range planning
+    """
+    # Overwrite variables
+    context_dict = {
+        'title': 'Range Planning',
+        'panel_list': [
+            {
+                'full_row': True,
+                'title': 'Range Assortment',
+                'type': 'table_read',
+                'url': reverse_lazy('range_assortment'),
                 'width': 12,
                 'overflow': 'auto',
                 'footer': {

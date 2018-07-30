@@ -26,17 +26,19 @@ urlpatterns = [
     url(r'^clustering_tab_store$', views.ClusteringViewStore.as_view(), name='clustering_tab_store'),
     url(r'^clustering_tab_assortment$', views.ClusteringViewAssortment.as_view(), name='clustering_tab_assortment'),
 
-    # Step 2: Store clustering
+    # Step 2: Sales planning
     url(r'^sales_planning_tab_consensus$', views.SalesPlanningViewConsensus.as_view(), name='sales_planning_tab_consensus'),
     url(r'^sales_planning_tab_brand$', views.SalesPlanningViewBrand.as_view(), name='sales_planning_tab_brand'),
     url(r'^sales_planning_tab_retail$', views.SalesPlanningViewRetail.as_view(), name='sales_planning_tab_retail'),
     url(r'^sales_planning_tab_consolidated$', views.SalesPlanningViewConsolidated.as_view(), name='sales_planning_tab_consolidated'),
 
-    # Step 3: Store clustering
+    # Step 3: Range planning
     url(r'^range_planning_tab_architecture$', views.RangePlanningViewArchitecture.as_view(), name='range_planning_tab_architecture'),
+    url(r'^range_planning_tab_plan$', views.RangePlanningViewPlan.as_view(), name='range_planning_tab_plan'),
+    url(r'^range_planning_tab_assortment$', views.RangePlanningViewAssortment.as_view(), name='range_planning_tab_assortment'),
     url(r'^range_planning_tab_master$', views.RangePlanningViewMaster.as_view(), name='range_planning_tab_master'),
 
-    # Step 4: Store clustering
+    # Step 4: Buy planning
     url(r'^buy_planning_tab$', views.BuyPlanningView.as_view(), name='buy_planning_tab'),
 
     # Forecast

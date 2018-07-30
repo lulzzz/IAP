@@ -117,10 +117,11 @@ class TableRead(BlockView):
         # Field name list
         self.set_form_field_list()
 
+        # If form_field_list not defined in view, get it from model
         if self.form_field_list is None:
-            field_names_list = model_obj.get_form_field_names_list(model_obj)
-        else:
-            field_names_list = self.form_field_list
+            self.form_field_list = model_obj.get_form_field_names_list(model_obj)
+        field_names_list = self.form_field_list
+
         # checkbox
         self.preselected_list = list()
         self.set_preselected_list()

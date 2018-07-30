@@ -1078,63 +1078,7 @@ class RangeArchitectureTable(
     # page_length = 'unlimited'
     order_by = 'product_category'
 
-    form_field_list = [
-        'product_division',
-        'product_category',
-
-        # range width - LY style level
-        'range_width_style_ly_essential_basic',
-        'range_width_style_ly_essential_fashion',
-        'range_width_style_ly_trend_basic',
-        'range_width_style_ly_trend_fashion',
-        'range_width_style_ly_total',
-
-        # range width - PY style level
-        'range_width_style_py_carry_over',
-        'range_width_style_py_essential_basic',
-        'range_width_style_py_essential_fashion',
-        'range_width_style_py_trend_basic',
-        'range_width_style_py_trend_fashion',
-        'range_width_style_py_total',
-
-        # range width - LY style colour level
-        'range_width_style_colour_ly_essential_basic',
-        'range_width_style_colour_ly_essential_fashion',
-        'range_width_style_colour_ly_trend_basic',
-        'range_width_style_colour_ly_trend_fashion',
-        'range_width_style_colour_ly_total',
-
-        # range width - PY style colour level
-        'range_width_style_colour_py_carry_over',
-        'range_width_style_colour_py_essential_basic',
-        'range_width_style_colour_py_essential_fashion',
-        'range_width_style_colour_py_trend_basic',
-        'range_width_style_colour_py_trend_fashion',
-        'range_width_style_colour_py_total',
-
-        # range effectiveness - LY
-        'range_effectiveness_style_ly_essential_basic',
-        'range_effectiveness_style_ly_essential_fashion',
-        'range_effectiveness_style_ly_trend_basic',
-        'range_effectiveness_style_ly_trend_fashion',
-        'range_effectiveness_style_ly_total',
-
-        # range effectiveness - PY
-        'range_effectiveness_style_py_carry_over',
-        'range_effectiveness_style_py_essential_basic',
-        'range_effectiveness_style_py_essential_fashion',
-        'range_effectiveness_style_py_trend_basic',
-        'range_effectiveness_style_py_trend_fashion',
-        'range_effectiveness_style_py_total',
-
-        # range performance ASP LY
-        'range_performance_ly',
-
-        # range performance ASP TY
-        'range_performance_py',
-    ]
-
-
+    form_field_list = None
     format_list = [
         None, # product_division
         'input_key', # product_category
@@ -1703,6 +1647,71 @@ class StrategicSalesPlanTable(views.TableRead):
             item.beginning_season_inventory = 0
             item.ending_season_inventory = item.beginning_season_inventory - item.net_sales - item.markdown
             item.save()
+
+
+class RangePlanTable(
+    project_mixins_view.DMSFilter,
+    views.TableRead
+):
+    r"""
+    View that shows the range architecture
+    """
+
+    model = models.RangePlan
+    post_amends_filter_dict = False
+    # page_length = 'unlimited'
+    order_by = 'product_category'
+
+    form_field_list = None
+    format_list = [
+        None, # product_division
+        'input_key', # product_category
+        'input_key', # product_essential_trend
+        'input_key', # product_basic_fashion
+
+        'intcomma_rounding0', # range_width_style_py_rangearchitecture
+        'intcomma_rounding0', # range_width_style_py_rangearchitecture_style_colour_count
+        'intcomma_rounding0', # range_width_style_py_rangemaster
+        'intcomma_rounding0', # range_width_style_colour_py_rangemaster
+    ]
+    tfoot = '4, 5, 6, 7'
+
+    def post_action(self):
+        # Prepare POST data
+        pass
+
+
+class RangeAssortmentTable(
+    project_mixins_view.DMSFilter,
+    views.TableRead
+):
+    r"""
+    View that shows the range architecture
+    """
+
+    model = models.RangeAssortment
+    post_amends_filter_dict = False
+    # page_length = 'unlimited'
+    order_by = 'product_category'
+
+    form_field_list = None
+    format_list = [
+        None, # product_division
+        'input_key', # product_category
+        'input_key', # product_essential_trend
+        'input_key', # product_basic_fashion
+        'intcomma_rounding0', # range_width_style_ly_storecluster
+        'intcomma_rounding0', # range_width_style_colour_ly_storecluster
+        'input_intcomma_rounding0', # range_width_style_py
+        'input_intcomma_rounding0', # range_width_style_colour_py
+    ]
+    tfoot = '4, 5, 6, 7'
+
+    def post_action(self):
+        # Prepare POST data
+        print('post')
+
+
 
 
 class TokenFieldDimProductStyle(views.TokenFieldAPI):
