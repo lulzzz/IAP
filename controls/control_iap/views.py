@@ -197,7 +197,6 @@ class BaseView(
                                 {
                                     'name': 'range_planning_tab',
                                     'label': 'Range Planning',
-                                    # 'url': reverse_lazy('range_planning_tab').replace('/', '#', 1),
                                     'sub_values':
                                     [
                                         {
@@ -225,7 +224,20 @@ class BaseView(
                                 {
                                     'name': 'buy_planning_tab',
                                     'label': 'Buy Planning',
-                                    'url': reverse_lazy('buy_planning_tab').replace('/', '#', 1),
+                                    # 'url': reverse_lazy('buy_planning_tab').replace('/', '#', 1),
+                                    'sub_values':
+                                    [
+                                        {
+                                            'name': 'buy_planning_tab_plan',
+                                            'label': 'Buy Plan',
+                                            'url': reverse_lazy('buy_planning_tab_plan').replace('/', '#', 1),
+                                        },
+                                        # {
+                                        #     'name': 'buy_planning_tab_otb',
+                                        #     'label': 'Range Architecture',
+                                        #     'url': reverse_lazy('range_planning_tab_architecture').replace('/', '#', 1),
+                                        # },
+                                    ]
                                 },
                             ]
                         },
@@ -1183,16 +1195,62 @@ class RangePlanningViewMaster(ContentView):
     }
 
 
-class BuyPlanningView(ContentView):
+class BuyPlanningViewPlan(ContentView):
     r"""
-    View that loads the buy planning
+    View that loads the buy plan
     """
+
     # Overwrite variables
-    context_dict = {
-        'title': 'Buy Planning',
-        'subtitle': 'under development',
-        'panel_list': []
-    }
+    def __init__(self):
+        super().__init__()
+        # self.js_list.append('init_selectpicker_control')
+
+    def get_context_dict(self, request):
+
+        # # Shortcuts
+        # filtered_model = models.BuyPlan.objects
+        #
+        # cluster_user_list_of_dict = list()
+        # for idx, item in enumerate(sorted(filtered_model.values_list('cluster_user', flat=True).distinct())):
+        #     if idx == 0:
+        #         temp_selected = True
+        #     else:
+        #         temp_selected = False
+        #     temp_dict = {
+        #         'value': item,
+        #         'label': item,
+        #         'selected': temp_selected,
+        #     }
+        #     cluster_user_list_of_dict.append(temp_dict)
+
+        return {
+            'title': 'Range Planning',
+            'panel_list': [
+                {
+                    'full_row': True,
+                    'title': 'Buy Plan',
+                    'type': 'table_read',
+                    'url': reverse_lazy('buy_plan'),
+                    'width': 12,
+                    'overflow': 'auto',
+                    'footer': {
+                        'button_list': [
+                            'save'
+                        ],
+                    },
+                    # 'selectpicker': [
+                    #     {
+                    #         'name': 'cluster_user',
+                    #         'label': 'Cluster',
+                    #         'live_search': False,
+                    #         'action_box': False,
+                    #         'multiple': False,
+                    #         'values': cluster_user_list_of_dict,
+                    #     },
+                    # ],
+                },
+            ]
+        }
 
 
 class ForecastView(ContentView):

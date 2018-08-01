@@ -958,6 +958,82 @@ class RangeMaster(models.Model, mixins_model.ModelFormFieldNames):
 # r"""
 # Buy planning
 # """
+class BuyPlan(models.Model, mixins_model.ModelFormFieldNames):
+    r'''
+    Model for buy plan
+    '''
+
+    # Unique fields
+    id = models.AutoField(primary_key=True)
+
+    # Unique fields
+    # cluster_user = models.CharField(max_length=2)
+    dim_iapfilter = models.ForeignKey(DimIAPFilter, on_delete=models.CASCADE, default=1)
+    product_category = models.CharField(verbose_name='product category', max_length=150)
+    product_style = models.CharField(max_length=150, default='Style 1')
+    product_essential_trend = models.CharField(verbose_name='essential trend', max_length=100, blank=True, null=True)
+    product_basic_fashion = models.CharField(verbose_name='basic fashion', max_length=100, blank=True, null=True)
+    product_carryover = models.CharField(verbose_name='carry over', max_length=100, blank=True, null=True)
+
+    # Attribute fields
+    product_division = models.CharField(verbose_name='product group', max_length=150)
+
+    # PRICING
+    pricing_cost = models.IntegerField(verbose_name='cost', blank=True, null=True, default=0)
+    pricing_selling_price = models.IntegerField(verbose_name='selling price', blank=True, null=True, default=0)
+
+    # RANGE WIDTH
+    range_width_style_colour_py = models.IntegerField(verbose_name='# of style-colour codes PY', blank=True, null=True, default=0)
+
+    # QUANTITY TO BUY
+    line_life_in_weeks = models.IntegerField(blank=True, null=True, default=0)
+    rate_of_sales = models.FloatField(blank=True, null=True, default=0)
+    number_of_stores = models.IntegerField(blank=True, null=True, default=0)
+    targeted_sell_thru = models.IntegerField(verbose_name='targeted sell thru %', blank=True, null=True, default=0)
+    quantity_to_buy = models.IntegerField(blank=True, null=True, default=0)
+
+    # OTB
+    otc_quantity = models.IntegerField(verbose_name='OTB quantity', blank=True, null=True, default=0)
+
+    # RANGE DEPTH BY STYLE BY COLOUR
+    range_effectiveness_style_colour_py = models.IntegerField(verbose_name='range effectiveness', blank=True, null=True, default=0)
+
+    # SIZE CURVE
+    size_curve_xs = models.IntegerField(verbose_name='size curve XS (10%)', blank=True, null=True, default=0)
+    size_curve_s = models.IntegerField(verbose_name='size curve S (20%)', blank=True, null=True, default=0)
+    size_curve_m = models.IntegerField(verbose_name='size curve M (30%)', blank=True, null=True, default=0)
+    size_curve_l = models.IntegerField(verbose_name='size curve L (30%)', blank=True, null=True, default=0)
+    size_curve_xl = models.IntegerField(verbose_name='size curve XL (10%)', blank=True, null=True, default=0)
+
+    # Frontend display
+    form_field_list = [
+        'product_division',
+        'product_category',
+        'product_style',
+        'product_essential_trend',
+        'product_basic_fashion',
+
+        'pricing_cost',
+        'pricing_selling_price',
+        'range_width_style_colour_py',
+        'line_life_in_weeks',
+        'rate_of_sales',
+        'number_of_stores',
+        'targeted_sell_thru',
+        'quantity_to_buy',
+        'otc_quantity',
+        'range_effectiveness_style_colour_py',
+        'size_curve_xs',
+        'size_curve_s',
+        'size_curve_m',
+        'size_curve_l',
+        'size_curve_xl',
+    ]
+
+    class Meta:
+        unique_together = (('dim_iapfilter', 'product_category', 'product_style', 'product_essential_trend', 'product_basic_fashion'),)
+
+
 # class DimMarkup(models.Model):
 #     country = models.CharField(max_length=500, blank=True, null=True)
 #     category = models.CharField(max_length=500, blank=True, null=True)
@@ -998,39 +1074,6 @@ class RangeMaster(models.Model, mixins_model.ModelFormFieldNames):
 #     parameter_type = models.CharField(max_length=500, blank=True, null=True)
 #     parameter_name = models.CharField(max_length=500, blank=True, null=True)
 #     value = models.FloatField(blank=True, null=True)
-#
-#     class Meta:
-#         managed = False
-#
-#
-# class StagingOtbProductGroupLevelInput(models.Model):
-#     region = models.CharField(max_length=500, blank=True, null=True)
-#     product_group = models.CharField(max_length=500, blank=True, null=True)
-#     season = models.CharField(max_length=500, blank=True, null=True)
-#     fashion_mix = models.FloatField(blank=True, null=True)
-#     trend_mix = models.FloatField(blank=True, null=True)
-#     discount_rate = models.FloatField(blank=True, null=True)
-#     after_sale_sellthru = models.FloatField(blank=True, null=True)
-#     before_sale_sellthru = models.FloatField(blank=True, null=True)
-#     discount_in_sale = models.FloatField(blank=True, null=True)
-#     markup_rate = models.FloatField(blank=True, null=True)
-#
-#     class Meta:
-#         managed = False
-#
-#
-# class StagingBudgetMarketLevelInput(models.Model):
-#     year = models.IntegerField(blank=True, null=True)
-#     currency = models.CharField(max_length=500, blank=True, null=True)
-#     country = models.CharField(max_length=500, blank=True, null=True)
-#     market = models.CharField(max_length=500, blank=True, null=True)
-#     region = models.CharField(max_length=500, blank=True, null=True)
-#     wbo = models.IntegerField(blank=True, null=True)
-#     siso = models.IntegerField(blank=True, null=True)
-#     coaff = models.FloatField(blank=True, null=True)
-#     fo = models.IntegerField(blank=True, null=True)
-#     b2c_fp = models.IntegerField(blank=True, null=True)
-#     b2c_fo = models.IntegerField(blank=True, null=True)
 #
 #     class Meta:
 #         managed = False

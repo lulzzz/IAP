@@ -39,7 +39,7 @@ urlpatterns = [
     url(r'^range_planning_tab_master$', views.RangePlanningViewMaster.as_view(), name='range_planning_tab_master'),
 
     # Step 4: Buy planning
-    url(r'^buy_planning_tab$', views.BuyPlanningView.as_view(), name='buy_planning_tab'),
+    url(r'^buy_planning_tab_plan$', views.BuyPlanningViewPlan.as_view(), name='buy_planning_tab_plan'),
 
     # Forecast
     url(r'^forecast_tab$', views.ForecastView.as_view(), name='forecast_tab'),

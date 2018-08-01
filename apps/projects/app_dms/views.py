@@ -1803,6 +1803,64 @@ class RangeAssortmentTable(
                 low_level_queryset.save()
 
 
+class BuyPlanTable(
+    project_mixins_view.DMSFilter,
+    views.TableRead
+):
+    r"""
+    View that shows the buy plan
+    """
+
+    model = models.BuyPlan
+    post_amends_filter_dict = True
+    # page_length = 'unlimited'
+    order_by = 'product_category'
+
+    form_field_list = None
+    format_list = [
+        None, # product_division
+        'input_key', # product_category
+        'input_key', # product_style
+        'input_key', # product_essential_trend
+        'input_key', # product_basic_fashion
+
+        'intcomma_rounding0', # pricing_cost
+        'intcomma_rounding0', # pricing_selling_price
+        'intcomma_rounding0', # range_width_style_colour_py
+        'input_intcomma_rounding0', # line_life_in_weeks
+        'input_intcomma_rounding0', # rate_of_sales
+        'input_intcomma_rounding0', # number_of_stores
+        'input_intcomma_rounding0', # targeted_sell_thru
+        'intcomma_rounding0', # quantity_to_buy
+        'intcomma_rounding0', # otc_quantity
+        'intcomma_rounding0', # range_effectiveness_style_colour_py
+        'intcomma_rounding0', # size_curve_xs
+        'intcomma_rounding0', # size_curve_s
+        'intcomma_rounding0', # size_curve_m
+        'intcomma_rounding0', # size_curve_l
+        'intcomma_rounding0', # size_curve_xl
+    ]
+    tfoot = '5, 6, 7, 8'
+
+    # Return empty table GET
+    def get(self, request):
+        self.context_dict = {
+            'message': {
+                'text': 'Table will be loaded after clicking the "Refresh" button.',
+                'type': 'info',
+                'position_left': True,
+            }
+        }
+        return self.display(request)
+
+    # Overwrite variables
+    def set_filter_dict(self):
+        pass
+
+    def post_action(self):
+        pass
+
+
 class TokenFieldDimProductStyle(views.TokenFieldAPI):
     r"""
     View that loads the data for tokenfield.
