@@ -260,10 +260,10 @@ class RangeMasterSerializer(
         model_item = models.DimProduct.objects.filter(division__icontains=value)
         if model_item.count() > 0:
             return model_item.first().division
-        raise serializers.ValidationError('Value must exist in product master')
+        raise serializers.ValidationError('Value must exist in product master.')
 
     def validate_product_category(self, value):
         model_item = models.DimProduct.objects.filter(category__icontains=value)
         if model_item.count() > 0:
             return model_item.first().category
-        return value
+        raise serializers.ValidationError('Value must exist in product master (or at least have a similar product category existing).')
