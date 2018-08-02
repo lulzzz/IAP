@@ -17,6 +17,7 @@ def upsert_rangearchitecture(session, dbo):
 
     # List of entries to insert intod database
     to_insert = list()
+    update_count = 0
 
     def get_from(df, category, essential_trend, basic_fashion):
         sliced = df.loc[(df['category'] == category)
@@ -83,7 +84,7 @@ def upsert_rangearchitecture(session, dbo):
         sum_mov = movements.groupby('category').sum().reset_index()
 
         # Build entries based on existing ones
-        update_count = 0
+
         for cat, div in movements.groupby('category').first().reset_index()[['category', 'division']].values:
             record = existing.get((cat, div, iapfilter.id))
             if record is not None:
@@ -235,7 +236,6 @@ def upsert_rangearchitecture(session, dbo):
                 record.range_performance_ly = int(round(sum_mov[sum_mov['category'] == cat]['salesvalue'].iloc[0] / sum_mov[sum_mov['category'] == cat]['units'].iloc[0], 0))
                 record.range_performance_py = int(round(sum_mov[sum_mov['category'] == cat]['salesvalue'].iloc[0] / sum_mov[sum_mov['category'] == cat]['units'].iloc[0], 0))
 
-
                 update_count += 1
 
             else:
@@ -336,7 +336,7 @@ def upsert_rangearchitecture(session, dbo):
                 to_insert.append(dbo.app_dms_rangearchitecture(**entry))
 
         session.commit()
-        print('Updated:', update_count, '| Inserted:', len(to_insert))
+        print('Updated:', update_count, '| To Insert:', len(to_insert))
 
     # Only add those posts which did not exist in the database
     session.bulk_save_objects(to_insert)
@@ -344,4 +344,4 @@ def upsert_rangearchitecture(session, dbo):
     # Now we commit our modifications (merges) and inserts (adds) to the database!
     session.commit()
 
-    print('Updated:', update_count, 'Inserted:', len(to_insert))
+    print('Updated:', update_count, '| Inserted:', len(to_insert))
