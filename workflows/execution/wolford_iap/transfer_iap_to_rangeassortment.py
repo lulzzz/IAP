@@ -6,7 +6,7 @@ sys.path.append(os.path.dirname(os.path.dirname(os.path.dirname(sys.path[0]))))
 from sqlalchemy.ext.automap import automap_base
 
 from workflows.execution.wolford_iap import Session, engine
-from workflows.transformations.projects.wolford_iap.upsert_rangearchitecture import upsert_rangearchitecture
+from workflows.transformations.projects.wolford_iap.upsert_rangeassortment import upsert_rangeassortment
 
 # Creating database session
 session = Session()
