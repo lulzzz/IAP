@@ -24,7 +24,7 @@ def upsert_rangeassortment(session, dbo):
     existing_objects = session.query(dbo.app_dms_rangeassortment).all()
     existing = {(o.cluster_user, o.product_category, o.product_division, o.product_essential_trend, o.product_basic_fashion, o.dim_iapfilter_id):o for o in existing_objects}
 
-    for cluster, category, division, essential_trend, basic_fashion, dim_iapfilter_id in tqdm(data[key_fields].values):
+    for cluster, category, division, essential_trend, basic_fashion, dim_iapfilter_id in data[key_fields].values:
 
         # Create entry
         entry = dict()
