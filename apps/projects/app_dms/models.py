@@ -1106,6 +1106,8 @@ class StrategicSalesPlan(models.Model, mixins_model.ModelFormFieldNames):
     gross_sales = models.FloatField(default=0, blank=True, null=True)
     gross_sales_init = models.FloatField(default=0, blank=True, null=True)
     asp = models.FloatField(default=0, blank=True, null=True)
+    sales_units_init = models.IntegerField(default=0, blank=True, null=True)
+    sales_units = models.IntegerField(default=0, blank=True, null=True)
     gross_sales_per_unit = models.IntegerField(default=0, blank=True, null=True)
     discounts = models.FloatField(default=0, blank=True, null=True)
     returns = models.FloatField(default=0, blank=True, null=True)
