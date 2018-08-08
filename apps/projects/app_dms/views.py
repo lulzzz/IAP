@@ -2007,7 +2007,10 @@ class BuyPlanTable(
 
     # Overwrite variables
     def set_filter_dict(self):
-        self.filter_dict = dict()
+        temp_dict = dict()
+        temp_dict['dim_iapfilter'] = self.dim_iapfilter
+        temp_dict['cluster_user__in'] = self.filter_dict.get('cluster_user__in')
+        self.filter_dict = temp_dict
 
     def post_action(self):
 
