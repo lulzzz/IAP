@@ -1203,25 +1203,25 @@ class BuyPlanningViewPlan(ContentView):
     # Overwrite variables
     def __init__(self):
         super().__init__()
-        # self.js_list.append('init_selectpicker_control')
+        self.js_list.append('init_selectpicker_control')
 
     def get_context_dict(self, request):
 
         # # Shortcuts
-        # filtered_model = models.BuyPlan.objects
-        #
-        # cluster_user_list_of_dict = list()
-        # for idx, item in enumerate(sorted(filtered_model.values_list('cluster_user', flat=True).distinct())):
-        #     if idx == 0:
-        #         temp_selected = True
-        #     else:
-        #         temp_selected = False
-        #     temp_dict = {
-        #         'value': item,
-        #         'label': item,
-        #         'selected': temp_selected,
-        #     }
-        #     cluster_user_list_of_dict.append(temp_dict)
+        filtered_model = models.BuyPlan.objects
+
+        cluster_user_list_of_dict = list()
+        for idx, item in enumerate(sorted(filtered_model.values_list('cluster_user', flat=True).distinct())):
+            if idx == 0:
+                temp_selected = True
+            else:
+                temp_selected = False
+            temp_dict = {
+                'value': item,
+                'label': item,
+                'selected': temp_selected,
+            }
+            cluster_user_list_of_dict.append(temp_dict)
 
         return {
             'title': 'Range Planning',
@@ -1238,16 +1238,16 @@ class BuyPlanningViewPlan(ContentView):
                             'save'
                         ],
                     },
-                    # 'selectpicker': [
-                    #     {
-                    #         'name': 'cluster_user',
-                    #         'label': 'Cluster',
-                    #         'live_search': False,
-                    #         'action_box': False,
-                    #         'multiple': False,
-                    #         'values': cluster_user_list_of_dict,
-                    #     },
-                    # ],
+                    'selectpicker': [
+                        {
+                            'name': 'cluster_user',
+                            'label': 'Cluster',
+                            'live_search': False,
+                            'action_box': False,
+                            'multiple': False,
+                            'values': cluster_user_list_of_dict,
+                        },
+                    ],
                 },
             ]
         }

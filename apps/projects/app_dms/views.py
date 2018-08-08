@@ -1,4 +1,5 @@
 import os
+import itertools
 from datetime import datetime, timedelta
 
 from django.shortcuts import render
@@ -1757,11 +1758,8 @@ class RangeAssortmentTable(
         }
         return self.display(request)
 
-    # Overwrite variables
-    def set_filter_dict(self):
-        pass
-
     def post_action(self):
+
         cluster_user_list = self.post_filter_dict.get('cluster_user')
         product_category_list = self.post_filter_dict.get('product_category')
         product_essential_trend_list = self.post_filter_dict.get('product_essential_trend')
@@ -1772,6 +1770,7 @@ class RangeAssortmentTable(
 
         if cluster_user_list and product_category_list and product_essential_trend_list and product_basic_fashion_list:
 
+            # For RangeAssortment
             for cluster_user, \
                 product_category, \
                 product_essential_trend, \
@@ -1796,11 +1795,73 @@ class RangeAssortmentTable(
                 )
 
                 # range width - PY style level
-                low_level_queryset.range_width_style_py = int(range_width_style_py.replace(',', ''))
-                low_level_queryset.range_width_style_colour_py = int(range_width_style_colour_py.replace(',', ''))
+                # Misterious error with values displayed as 0 here
+                range_width_style_py_int = int(range_width_style_py.replace(',', ''))
+                range_width_style_colour_py_int = int(range_width_style_colour_py.replace(',', ''))
+
+                # if range_width_style_py_int <= 0:
+                #     range_width_style_py_int = 0
+                #     range_width_style_colour_py_int = 0
+                # else:
+                #     range_width_style_colour_py_int = int(range_width_style_colour_py.replace(',', ''))
+                #     if range_width_style_colour_py_int < range_width_style_py_int:
+                #         range_width_style_colour_py_int = range_width_style_py_int
+
+                low_level_queryset.range_width_style_py = range_width_style_py_int
+                low_level_queryset.range_width_style_colour_py = range_width_style_colour_py_int
 
                 # Save to database
                 low_level_queryset.save()
+
+
+            # For buyplan
+            for rangeassortment_item in models.RangeAssortment.objects.filter(
+                dim_iapfilter=self.dim_iapfilter,
+            ).all():
+
+                entry = models.BuyPlan.objects.filter(
+                    dim_iapfilter_id=self.dim_iapfilter,
+                    cluster_user=rangeassortment_item.cluster_user,
+                    product_category=rangeassortment_item.product_category,
+                    product_essential_trend=rangeassortment_item.product_essential_trend,
+                    product_basic_fashion=rangeassortment_item.product_basic_fashion,
+                )
+                product_style_list = list()
+
+                # Find existing product_style values
+                if entry.exists():
+                    product_style_list = list(entry.values_list('product_style', flat=True))
+
+                # Add artificial product_style values
+                if rangeassortment_item.range_width_style_py > len(product_style_list):
+                    # Generate new style values
+                    for elem in range(rangeassortment_item.range_width_style_py-len(product_style_list)):
+                        for idx in range(1, 10000):
+                            temp_product_style = 'Style ' + str(idx).zfill(4)
+                            if temp_product_style not in product_style_list:
+                                product_style_list.append(temp_product_style)
+                                break
+
+                    # Iterate through product_style_list (update or create)
+                    range_width_style_colour_py = int(rangeassortment_item.range_width_style_colour_py/rangeassortment_item.range_width_style_py) if rangeassortment_item.range_width_style_py > 0 else 0
+                    for product_style in product_style_list:
+                        models.BuyPlan.objects.update_or_create(
+                            dim_iapfilter_id=self.dim_iapfilter,
+                            cluster_user=rangeassortment_item.cluster_user,
+                            product_category=rangeassortment_item.product_category,
+                            product_essential_trend=rangeassortment_item.product_essential_trend,
+                            product_basic_fashion=rangeassortment_item.product_basic_fashion,
+                            product_style=product_style,
+                            defaults={
+                                'range_width_style_colour_py':range_width_style_colour_py
+                            }
+                        )
+
+                # Remove product_style values (if user reduced width PY)
+                elif rangeassortment_item.range_width_style_py < len(product_style_list):
+                    delete_entry_count = len(product_style_list)-rangeassortment_item.range_width_style_py
+                    entries_to_delete = entry.all().order_by('-id').values_list('id', flat=True)[:delete_entry_count]
+                    models.BuyPlan.objects.filter(pk__in=list(entries_to_delete)).delete()
 
 
 class BuyPlanTable(
@@ -1851,6 +1912,7 @@ class BuyPlanTable(
                 'position_left': True,
             }
         }
+        self.pre_action()
         return self.display(request)
 
     # Overwrite variables
@@ -1858,6 +1920,9 @@ class BuyPlanTable(
         pass
 
     def post_action(self):
+        pass
+
+    def pre_action(self):
         pass
 
 

@@ -967,13 +967,13 @@ class BuyPlan(models.Model, mixins_model.ModelFormFieldNames):
     id = models.AutoField(primary_key=True)
 
     # Unique fields
-    # cluster_user = models.CharField(max_length=2)
+    cluster_user = models.CharField(max_length=2)
     dim_iapfilter = models.ForeignKey(DimIAPFilter, on_delete=models.CASCADE, default=1)
     product_category = models.CharField(verbose_name='product category', max_length=150)
     product_style = models.CharField(max_length=150, default='Style 1')
     product_essential_trend = models.CharField(verbose_name='essential trend', max_length=100, blank=True, null=True)
     product_basic_fashion = models.CharField(verbose_name='basic fashion', max_length=100, blank=True, null=True)
-    product_carryover = models.CharField(verbose_name='carry over', max_length=100, blank=True, null=True)
+    # product_carryover = models.CharField(verbose_name='carry over', max_length=100, blank=True, null=True)
 
     # Attribute fields
     product_division = models.CharField(verbose_name='product group', max_length=150)
@@ -1103,6 +1103,7 @@ class StrategicSalesPlan(models.Model, mixins_model.ModelFormFieldNames):
     channel_mix = models.FloatField(default=0, blank=True, null=True)
 
     # Informative fields
+    row_styling = models.CharField(max_length=45, blank=True, null=True)
     gross_sales = models.FloatField(default=0, blank=True, null=True)
     gross_sales_init = models.FloatField(default=0, blank=True, null=True)
     asp = models.FloatField(default=0, blank=True, null=True)
@@ -1122,7 +1123,6 @@ class StrategicSalesPlan(models.Model, mixins_model.ModelFormFieldNames):
     beginning_season_inventory = models.FloatField(default=0, blank=True, null=True)
     ending_season_inventory = models.FloatField(default=0, blank=True, null=True)
     markdown = models.FloatField(default=0, blank=True, null=True)
-    row_styling = models.CharField(max_length=45, blank=True, null=True)
     average_cost_of_inventory = models.FloatField(default=0, blank=True, null=True)
     intake_beginning_of_season = models.FloatField(default=0, blank=True, null=True)
 
