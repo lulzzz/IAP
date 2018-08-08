@@ -1066,156 +1066,6 @@ class PlanByStoreTable(
             item.save()
 
 
-class RangeArchitectureTable(
-    project_mixins_view.DMSFilter,
-    views.TableRead
-):
-    r"""
-    View that shows the range architecture
-    """
-
-    model = models.RangeArchitecture
-    post_amends_filter_dict = False
-    # page_length = 'unlimited'
-    order_by = 'product_category'
-
-    form_field_list = None
-    format_list = [
-        None, # product_division
-        'input_key', # product_category
-
-        'intcomma_rounding0', # range_width_style_ly_essential_basic
-        'intcomma_rounding0', # range_width_style_ly_essential_fashion
-        'intcomma_rounding0', # range_width_style_ly_trend_basic
-        'intcomma_rounding0', # range_width_style_ly_trend_fashion
-        'strong_intcomma_rounding0', # range_width_style_ly_total
-        'input_intcomma_rounding0', # range_width_style_py_carry_over
-        'input_intcomma_rounding0', # range_width_style_py_essential_basic
-        'input_intcomma_rounding0', # range_width_style_py_essential_fashion
-        'input_intcomma_rounding0', # range_width_style_py_trend_basic
-        'input_intcomma_rounding0', # range_width_style_py_trend_fashion
-        'strong_intcomma_rounding0', # range_width_style_py_total
-
-        'intcomma_rounding0', # range_width_style_colour_ly_essential_basic
-        'intcomma_rounding0', # range_width_style_colour_ly_essential_fashion
-        'intcomma_rounding0', # range_width_style_colour_ly_trend_basic
-        'intcomma_rounding0', # range_width_style_colour_ly_trend_fashion
-        'strong_intcomma_rounding0', # range_width_style_colour_ly_total
-
-        'intcomma_rounding0', # range_width_style_colour_py_carry_over
-        'intcomma_rounding0', # range_width_style_colour_py_essential_basic
-        'intcomma_rounding0', # range_width_style_colour_py_essential_fashion
-        'intcomma_rounding0', # range_width_style_colour_py_trend_basic
-        'intcomma_rounding0', # range_width_style_colour_py_trend_fashion
-        'strong_intcomma_rounding0', # range_width_style_colour_py_total
-
-        'intcomma_rounding0', # range_effectiveness_style_ly_essential_basic
-        'intcomma_rounding0', # range_effectiveness_style_ly_essential_fashion
-        'intcomma_rounding0', # range_effectiveness_style_ly_trend_basic
-        'intcomma_rounding0', # range_effectiveness_style_ly_trend_fashion
-        'strong_intcomma_rounding0', # range_effectiveness_style_ly_total
-
-        'input_intcomma_rounding0', # range_effectiveness_style_py_carry_over
-        'input_intcomma_rounding0', # range_effectiveness_style_py_essential_basic
-        'input_intcomma_rounding0', # range_effectiveness_style_py_essential_fashion
-        'input_intcomma_rounding0', # range_effectiveness_style_py_trend_basic
-        'input_intcomma_rounding0', # range_effectiveness_style_py_trend_fashion
-        'strong_intcomma_rounding0', # range_effectiveness_style_py_total
-
-        'intcomma_rounding0', # range_performance_ly
-        'input_intcomma_rounding0', # range_performance_py
-    ]
-    tfoot = '2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29, 30, 31, 32, 33, 34, 35, 36'
-
-    def post_action(self):
-        product_category_list = self.post_filter_dict.get('product_category')
-        range_width_style_py_carry_over_list = self.post_filter_dict.get('range_width_style_py_carry_over')
-        range_width_style_py_essential_basic_list = self.post_filter_dict.get('range_width_style_py_essential_basic')
-        range_width_style_py_essential_fashion_list = self.post_filter_dict.get('range_width_style_py_essential_fashion')
-        range_width_style_py_trend_basic_list = self.post_filter_dict.get('range_width_style_py_trend_basic')
-        range_width_style_py_trend_fashion_list = self.post_filter_dict.get('range_width_style_py_trend_fashion')
-
-        range_effectiveness_style_py_carry_over_list = self.post_filter_dict.get('range_effectiveness_style_py_carry_over')
-        range_effectiveness_style_py_essential_basic_list = self.post_filter_dict.get('range_effectiveness_style_py_essential_basic')
-        range_effectiveness_style_py_essential_fashion_list = self.post_filter_dict.get('range_effectiveness_style_py_essential_fashion')
-        range_effectiveness_style_py_trend_basic_list = self.post_filter_dict.get('range_effectiveness_style_py_trend_basic')
-        range_effectiveness_style_py_trend_fashion_list = self.post_filter_dict.get('range_effectiveness_style_py_trend_fashion')
-
-        range_performance_py_list = self.post_filter_dict.get('range_performance_py')
-
-        for product_category, \
-            range_width_style_py_carry_over, \
-            range_width_style_py_essential_basic, \
-            range_width_style_py_essential_fashion, \
-            range_width_style_py_trend_basic, \
-            range_width_style_py_trend_fashion, \
-            range_effectiveness_style_py_carry_over, \
-            range_effectiveness_style_py_essential_basic, \
-            range_effectiveness_style_py_essential_fashion, \
-            range_effectiveness_style_py_trend_basic, \
-            range_effectiveness_style_py_trend_fashion, \
-            range_performance_py, \
-        in zip(
-            product_category_list,
-            range_width_style_py_carry_over_list,
-            range_width_style_py_essential_basic_list,
-            range_width_style_py_essential_fashion_list,
-            range_width_style_py_trend_basic_list,
-            range_width_style_py_trend_fashion_list,
-            range_effectiveness_style_py_carry_over_list,
-            range_effectiveness_style_py_essential_basic_list,
-            range_effectiveness_style_py_essential_fashion_list,
-            range_effectiveness_style_py_trend_basic_list,
-            range_effectiveness_style_py_trend_fashion_list,
-            range_performance_py_list,
-        ):
-
-            low_level_queryset = self.model.objects.get(
-                dim_iapfilter=self.dim_iapfilter,
-                product_category=product_category,
-            )
-
-            # range width - PY style level
-            low_level_queryset.range_width_style_py_carry_over = int(range_width_style_py_carry_over.replace(',', ''))
-            low_level_queryset.range_width_style_py_essential_basic = int(range_width_style_py_essential_basic.replace(',', ''))
-            low_level_queryset.range_width_style_py_essential_fashion = int(range_width_style_py_essential_fashion.replace(',', ''))
-            low_level_queryset.range_width_style_py_trend_basic = int(range_width_style_py_trend_basic.replace(',', ''))
-            low_level_queryset.range_width_style_py_trend_fashion = int(range_width_style_py_trend_fashion.replace(',', ''))
-
-            # range effectiveness - PY
-            low_level_queryset.range_effectiveness_style_py_carry_over = int(range_effectiveness_style_py_carry_over.replace(',', ''))
-            low_level_queryset.range_effectiveness_style_py_essential_basic = int(range_effectiveness_style_py_essential_basic.replace(',', ''))
-            low_level_queryset.range_effectiveness_style_py_essential_fashion = int(range_effectiveness_style_py_essential_fashion.replace(',', ''))
-            low_level_queryset.range_effectiveness_style_py_trend_basic = int(range_effectiveness_style_py_trend_basic.replace(',', ''))
-            low_level_queryset.range_effectiveness_style_py_trend_fashion = int(range_effectiveness_style_py_trend_fashion.replace(',', ''))
-
-            # range performance ASP PY
-            low_level_queryset.range_performance_py = int(range_performance_py.replace(',', ''))
-
-            # Save to database
-            low_level_queryset.save()
-
-        # Additional calculations
-        for item in self.model.objects.all():
-
-            # totals width style level
-            item.range_width_style_ly_total = item.range_width_style_ly_essential_basic + item.range_width_style_ly_essential_fashion + item.range_width_style_ly_trend_basic + item.range_width_style_ly_trend_fashion
-            item.range_width_style_py_total = item.range_width_style_py_essential_basic + item.range_width_style_py_essential_fashion + item.range_width_style_py_trend_basic + item.range_width_style_py_trend_fashion + item.range_width_style_py_carry_over
-
-            # range width - LY style colour level
-            item.range_width_style_colour_py_carry_over = 0 * item.range_width_style_py_carry_over
-            item.range_width_style_colour_py_essential_basic = item.range_width_style_ly_essential_basic_avg_colour_count * item.range_width_style_py_essential_basic
-            item.range_width_style_colour_py_essential_fashion = item.range_width_style_ly_essential_fashion_avg_colour_count * item.range_width_style_py_essential_fashion
-            item.range_width_style_colour_py_trend_basic = item.range_width_style_ly_trend_basic_avg_colour_count * item.range_width_style_py_trend_basic
-            item.range_width_style_colour_py_trend_fashion = item.range_width_style_ly_trend_fashion_avg_colour_count * item.range_width_style_py_trend_fashion
-            item.range_width_style_colour_py_total = item.range_width_style_colour_py_carry_over + item.range_width_style_colour_py_essential_basic + item.range_width_style_colour_py_essential_fashion + item.range_width_style_colour_py_trend_basic + item.range_width_style_colour_py_trend_fashion
-
-            # totals effectiveness style level
-            item.range_effectiveness_style_ly_total = item.range_effectiveness_style_ly_essential_basic + item.range_effectiveness_style_ly_essential_fashion + item.range_effectiveness_style_ly_trend_basic + item.range_effectiveness_style_ly_trend_fashion
-            item.range_effectiveness_style_py_total = item.range_effectiveness_style_py_carry_over + item.range_effectiveness_style_py_essential_basic + item.range_effectiveness_style_py_essential_fashion + item.range_effectiveness_style_py_trend_basic + item.range_effectiveness_style_py_trend_fashion
-
-            item.save()
-
 
 class StrategicSalesPlanTable(views.TableRead):
     r"""
@@ -1650,6 +1500,200 @@ class StrategicSalesPlanTable(views.TableRead):
             item.save()
 
 
+class RangeArchitectureTable(
+    project_mixins_view.DMSFilter,
+    views.TableRead
+):
+    r"""
+    View that shows the range architecture
+    """
+
+    model = models.RangeArchitecture
+    post_amends_filter_dict = False
+    # page_length = 'unlimited'
+    order_by = 'product_category'
+
+    column_styling_list = [
+        'transparent', # product_division
+        'transparent', # product_category
+        '#d9d9d9', # range_width_style_ly_essential_basic
+        '#d9d9d9', # range_width_style_ly_essential_fashion
+        '#d9d9d9', # range_width_style_ly_trend_basic
+        '#d9d9d9', # range_width_style_ly_trend_fashion
+        '#d9d9d9', # range_width_style_ly_total
+        '#9cbffb', # range_width_style_py_carry_over
+        '#9cbffb', # range_width_style_py_essential_basic
+        '#9cbffb', # range_width_style_py_essential_fashion
+        '#9cbffb', # range_width_style_py_trend_basic
+        '#9cbffb', # range_width_style_py_trend_fashion
+        '#9cbffb', # range_width_style_py_total
+
+        '#d9d9d9', # range_width_style_colour_ly_essential_basic
+        '#d9d9d9', # range_width_style_colour_ly_essential_fashion
+        '#d9d9d9', # range_width_style_colour_ly_trend_basic
+        '#d9d9d9', # range_width_style_colour_ly_trend_fashion
+        '#d9d9d9', # range_width_style_colour_ly_total
+
+        '#9cbffb', # range_width_style_colour_py_carry_over
+        '#9cbffb', # range_width_style_colour_py_essential_basic
+        '#9cbffb', # range_width_style_colour_py_essential_fashion
+        '#9cbffb', # range_width_style_colour_py_trend_basic
+        '#9cbffb', # range_width_style_colour_py_trend_fashion
+        '#9cbffb', # range_width_style_colour_py_total
+
+        '#d9d9d9', # range_effectiveness_style_ly_essential_basic
+        '#d9d9d9', # range_effectiveness_style_ly_essential_fashion
+        '#d9d9d9', # range_effectiveness_style_ly_trend_basic
+        '#d9d9d9', # range_effectiveness_style_ly_trend_fashion
+        '#d9d9d9', # range_effectiveness_style_ly_total
+
+        '#9cbffb', # range_effectiveness_style_py_carry_over
+        '#9cbffb', # range_effectiveness_style_py_essential_basic
+        '#9cbffb', # range_effectiveness_style_py_essential_fashion
+        '#9cbffb', # range_effectiveness_style_py_trend_basic
+        '#9cbffb', # range_effectiveness_style_py_trend_fashion
+        '#9cbffb', # range_effectiveness_style_py_total
+
+        '#d9d9d9', # range_performance_ly
+        '#9cbffb', # range_performance_py
+    ]
+    format_list = [
+        None, # product_division
+        'input_key', # product_category
+
+        'intcomma_rounding0', # range_width_style_ly_essential_basic
+        'intcomma_rounding0', # range_width_style_ly_essential_fashion
+        'intcomma_rounding0', # range_width_style_ly_trend_basic
+        'intcomma_rounding0', # range_width_style_ly_trend_fashion
+        'strong_intcomma_rounding0', # range_width_style_ly_total
+        'input_intcomma_rounding0', # range_width_style_py_carry_over
+        'input_intcomma_rounding0', # range_width_style_py_essential_basic
+        'input_intcomma_rounding0', # range_width_style_py_essential_fashion
+        'input_intcomma_rounding0', # range_width_style_py_trend_basic
+        'input_intcomma_rounding0', # range_width_style_py_trend_fashion
+        'strong_intcomma_rounding0', # range_width_style_py_total
+
+        'intcomma_rounding0', # range_width_style_colour_ly_essential_basic
+        'intcomma_rounding0', # range_width_style_colour_ly_essential_fashion
+        'intcomma_rounding0', # range_width_style_colour_ly_trend_basic
+        'intcomma_rounding0', # range_width_style_colour_ly_trend_fashion
+        'strong_intcomma_rounding0', # range_width_style_colour_ly_total
+
+        'intcomma_rounding0', # range_width_style_colour_py_carry_over
+        'intcomma_rounding0', # range_width_style_colour_py_essential_basic
+        'intcomma_rounding0', # range_width_style_colour_py_essential_fashion
+        'intcomma_rounding0', # range_width_style_colour_py_trend_basic
+        'intcomma_rounding0', # range_width_style_colour_py_trend_fashion
+        'strong_intcomma_rounding0', # range_width_style_colour_py_total
+
+        'intcomma_rounding0', # range_effectiveness_style_ly_essential_basic
+        'intcomma_rounding0', # range_effectiveness_style_ly_essential_fashion
+        'intcomma_rounding0', # range_effectiveness_style_ly_trend_basic
+        'intcomma_rounding0', # range_effectiveness_style_ly_trend_fashion
+        'strong_intcomma_rounding0', # range_effectiveness_style_ly_total
+
+        'input_intcomma_rounding0', # range_effectiveness_style_py_carry_over
+        'input_intcomma_rounding0', # range_effectiveness_style_py_essential_basic
+        'input_intcomma_rounding0', # range_effectiveness_style_py_essential_fashion
+        'input_intcomma_rounding0', # range_effectiveness_style_py_trend_basic
+        'input_intcomma_rounding0', # range_effectiveness_style_py_trend_fashion
+        'strong_intcomma_rounding0', # range_effectiveness_style_py_total
+
+        'intcomma_rounding0', # range_performance_ly
+        'input_intcomma_rounding0', # range_performance_py
+    ]
+    tfoot = '2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29, 30, 31, 32, 33, 34, 35, 36'
+
+    def post_action(self):
+        product_category_list = self.post_filter_dict.get('product_category')
+        range_width_style_py_carry_over_list = self.post_filter_dict.get('range_width_style_py_carry_over')
+        range_width_style_py_essential_basic_list = self.post_filter_dict.get('range_width_style_py_essential_basic')
+        range_width_style_py_essential_fashion_list = self.post_filter_dict.get('range_width_style_py_essential_fashion')
+        range_width_style_py_trend_basic_list = self.post_filter_dict.get('range_width_style_py_trend_basic')
+        range_width_style_py_trend_fashion_list = self.post_filter_dict.get('range_width_style_py_trend_fashion')
+
+        range_effectiveness_style_py_carry_over_list = self.post_filter_dict.get('range_effectiveness_style_py_carry_over')
+        range_effectiveness_style_py_essential_basic_list = self.post_filter_dict.get('range_effectiveness_style_py_essential_basic')
+        range_effectiveness_style_py_essential_fashion_list = self.post_filter_dict.get('range_effectiveness_style_py_essential_fashion')
+        range_effectiveness_style_py_trend_basic_list = self.post_filter_dict.get('range_effectiveness_style_py_trend_basic')
+        range_effectiveness_style_py_trend_fashion_list = self.post_filter_dict.get('range_effectiveness_style_py_trend_fashion')
+
+        range_performance_py_list = self.post_filter_dict.get('range_performance_py')
+
+        for product_category, \
+            range_width_style_py_carry_over, \
+            range_width_style_py_essential_basic, \
+            range_width_style_py_essential_fashion, \
+            range_width_style_py_trend_basic, \
+            range_width_style_py_trend_fashion, \
+            range_effectiveness_style_py_carry_over, \
+            range_effectiveness_style_py_essential_basic, \
+            range_effectiveness_style_py_essential_fashion, \
+            range_effectiveness_style_py_trend_basic, \
+            range_effectiveness_style_py_trend_fashion, \
+            range_performance_py, \
+        in zip(
+            product_category_list,
+            range_width_style_py_carry_over_list,
+            range_width_style_py_essential_basic_list,
+            range_width_style_py_essential_fashion_list,
+            range_width_style_py_trend_basic_list,
+            range_width_style_py_trend_fashion_list,
+            range_effectiveness_style_py_carry_over_list,
+            range_effectiveness_style_py_essential_basic_list,
+            range_effectiveness_style_py_essential_fashion_list,
+            range_effectiveness_style_py_trend_basic_list,
+            range_effectiveness_style_py_trend_fashion_list,
+            range_performance_py_list,
+        ):
+
+            low_level_queryset = self.model.objects.get(
+                dim_iapfilter=self.dim_iapfilter,
+                product_category=product_category,
+            )
+
+            # range width - PY style level
+            low_level_queryset.range_width_style_py_carry_over = int(range_width_style_py_carry_over.replace(',', ''))
+            low_level_queryset.range_width_style_py_essential_basic = int(range_width_style_py_essential_basic.replace(',', ''))
+            low_level_queryset.range_width_style_py_essential_fashion = int(range_width_style_py_essential_fashion.replace(',', ''))
+            low_level_queryset.range_width_style_py_trend_basic = int(range_width_style_py_trend_basic.replace(',', ''))
+            low_level_queryset.range_width_style_py_trend_fashion = int(range_width_style_py_trend_fashion.replace(',', ''))
+
+            # range effectiveness - PY
+            low_level_queryset.range_effectiveness_style_py_carry_over = int(range_effectiveness_style_py_carry_over.replace(',', ''))
+            low_level_queryset.range_effectiveness_style_py_essential_basic = int(range_effectiveness_style_py_essential_basic.replace(',', ''))
+            low_level_queryset.range_effectiveness_style_py_essential_fashion = int(range_effectiveness_style_py_essential_fashion.replace(',', ''))
+            low_level_queryset.range_effectiveness_style_py_trend_basic = int(range_effectiveness_style_py_trend_basic.replace(',', ''))
+            low_level_queryset.range_effectiveness_style_py_trend_fashion = int(range_effectiveness_style_py_trend_fashion.replace(',', ''))
+
+            # range performance ASP PY
+            low_level_queryset.range_performance_py = int(range_performance_py.replace(',', ''))
+
+            # Save to database
+            low_level_queryset.save()
+
+        # Additional calculations
+        for item in self.model.objects.all():
+
+            # totals width style level
+            item.range_width_style_ly_total = item.range_width_style_ly_essential_basic + item.range_width_style_ly_essential_fashion + item.range_width_style_ly_trend_basic + item.range_width_style_ly_trend_fashion
+            item.range_width_style_py_total = item.range_width_style_py_essential_basic + item.range_width_style_py_essential_fashion + item.range_width_style_py_trend_basic + item.range_width_style_py_trend_fashion + item.range_width_style_py_carry_over
+
+            # range width - LY style colour level
+            item.range_width_style_colour_py_carry_over = 0 * item.range_width_style_py_carry_over
+            item.range_width_style_colour_py_essential_basic = item.range_width_style_ly_essential_basic_avg_colour_count * item.range_width_style_py_essential_basic
+            item.range_width_style_colour_py_essential_fashion = item.range_width_style_ly_essential_fashion_avg_colour_count * item.range_width_style_py_essential_fashion
+            item.range_width_style_colour_py_trend_basic = item.range_width_style_ly_trend_basic_avg_colour_count * item.range_width_style_py_trend_basic
+            item.range_width_style_colour_py_trend_fashion = item.range_width_style_ly_trend_fashion_avg_colour_count * item.range_width_style_py_trend_fashion
+            item.range_width_style_colour_py_total = item.range_width_style_colour_py_carry_over + item.range_width_style_colour_py_essential_basic + item.range_width_style_colour_py_essential_fashion + item.range_width_style_colour_py_trend_basic + item.range_width_style_colour_py_trend_fashion
+
+            # totals effectiveness style level
+            item.range_effectiveness_style_ly_total = item.range_effectiveness_style_ly_essential_basic + item.range_effectiveness_style_ly_essential_fashion + item.range_effectiveness_style_ly_trend_basic + item.range_effectiveness_style_ly_trend_fashion
+            item.range_effectiveness_style_py_total = item.range_effectiveness_style_py_carry_over + item.range_effectiveness_style_py_essential_basic + item.range_effectiveness_style_py_essential_fashion + item.range_effectiveness_style_py_trend_basic + item.range_effectiveness_style_py_trend_fashion
+
+            item.save()
+
+
 class RangePlanTable(
     project_mixins_view.DMSFilter,
     views.TableRead
@@ -1664,6 +1708,16 @@ class RangePlanTable(
     order_by = 'product_category'
 
     form_field_list = None
+    column_styling_list = [
+        'transparent', # product_division
+        'transparent', # product_category
+        'transparent', # product_essential_trend
+        'transparent', # product_basic_fashion
+        '#f3cfcf', # range_width_style_py_rangearchitecture
+        '#f3cfcf', # range_width_style_py_rangearchitecture_style_colour_count
+        '#dbecdd', # range_width_style_py_rangemaster
+        '#dbecdd', # range_width_style_colour_py_rangemaster
+    ]
     format_list = [
         None, # product_division
         'input_key', # product_category
@@ -1734,6 +1788,18 @@ class RangeAssortmentTable(
     order_by = 'product_category'
 
     form_field_list = None
+    column_styling_list = [
+        'transparent', # cluster_user
+        'transparent', # product_division
+        'transparent', # product_category
+        'transparent', # product_essential_trend
+        'transparent', # product_basic_fashion
+        '#f3cfcf', # range_width_style_ly_storecluster
+        '#f3cfcf', # range_width_style_colour_ly_storecluster
+        '#dbecdd', # range_width_style_py
+        '#dbecdd', # range_width_style_colour_py
+    ]
+
     format_list = [
         'input_key', # cluster_user
         None, # product_division
@@ -1799,9 +1865,8 @@ class RangeAssortmentTable(
                 range_width_style_py_int = int(range_width_style_py.replace(',', ''))
                 range_width_style_colour_py_int = int(range_width_style_colour_py.replace(',', ''))
 
-                # if range_width_style_py_int <= 0:
-                #     range_width_style_py_int = 0
-                #     range_width_style_colour_py_int = 0
+                if range_width_style_py_int == 0:
+                    range_width_style_colour_py_int = 0
                 # else:
                 #     range_width_style_colour_py_int = int(range_width_style_colour_py.replace(',', ''))
                 #     if range_width_style_colour_py_int < range_width_style_py_int:
@@ -1833,7 +1898,7 @@ class RangeAssortmentTable(
                     product_style_list = list(entry.values_list('product_style', flat=True))
 
                 # Add artificial product_style values
-                if rangeassortment_item.range_width_style_py > len(product_style_list):
+                if rangeassortment_item.range_width_style_py >= len(product_style_list):
                     # Generate new style values
                     for elem in range(rangeassortment_item.range_width_style_py-len(product_style_list)):
                         for idx in range(1, 10000):
@@ -1853,12 +1918,13 @@ class RangeAssortmentTable(
                             product_basic_fashion=rangeassortment_item.product_basic_fashion,
                             product_style=product_style,
                             defaults={
-                                'range_width_style_colour_py':range_width_style_colour_py
+                                'range_width_style_colour_py':range_width_style_colour_py,
+                                'product_division':rangeassortment_item.product_division,
                             }
                         )
 
                 # Remove product_style values (if user reduced width PY)
-                elif rangeassortment_item.range_width_style_py < len(product_style_list):
+                else:
                     delete_entry_count = len(product_style_list)-rangeassortment_item.range_width_style_py
                     entries_to_delete = entry.all().order_by('-id').values_list('id', flat=True)[:delete_entry_count]
                     models.BuyPlan.objects.filter(pk__in=list(entries_to_delete)).delete()
@@ -1877,8 +1943,8 @@ class BuyPlanTable(
     # page_length = 'unlimited'
     order_by = 'product_category'
 
-    form_field_list = None
     format_list = [
+        'input_key', # cluster_user
         None, # product_division
         'input_key', # product_category
         'input_key', # product_style
@@ -1889,9 +1955,9 @@ class BuyPlanTable(
         'intcomma_rounding0', # pricing_selling_price
         'intcomma_rounding0', # range_width_style_colour_py
         'input_intcomma_rounding0', # line_life_in_weeks
-        'input_intcomma_rounding0', # rate_of_sales
+        'input_intcomma', # rate_of_sales
         'input_intcomma_rounding0', # number_of_stores
-        'input_intcomma_rounding0', # targeted_sell_thru
+        'input_percentagecomma', # targeted_sell_thru
         'intcomma_rounding0', # quantity_to_buy
         'intcomma_rounding0', # otc_quantity
         'intcomma_rounding0', # range_effectiveness_style_colour_py
@@ -1900,6 +1966,30 @@ class BuyPlanTable(
         'intcomma_rounding0', # size_curve_m
         'intcomma_rounding0', # size_curve_l
         'intcomma_rounding0', # size_curve_xl
+    ]
+    column_styling_list = [
+        'transparent', # cluster_user
+        'transparent', # product_division
+        'transparent', # product_category
+        'transparent', # product_style
+        'transparent', # product_essential_trend
+        'transparent', # product_basic_fashion
+
+        '#f3cfcf', # pricing_cost
+        '#f3cfcf', # pricing_selling_price
+        '#bccde7', # range_width_style_colour_py
+        '#dbecdd', # line_life_in_weeks
+        '#dbecdd', # rate_of_sales
+        '#dbecdd', # number_of_stores
+        '#dbecdd', # targeted_sell_thru
+        '#dbecdd', # quantity_to_buy
+        '#d0d9f1', # otc_quantity
+        '#ccd6f1', # range_effectiveness_style_colour_py
+        '#ececec', # size_curve_xs
+        '#ececec', # size_curve_s
+        '#ececec', # size_curve_m
+        '#ececec', # size_curve_l
+        '#ececec', # size_curve_xl
     ]
     tfoot = '5, 6, 7, 8'
 
@@ -1917,10 +2007,77 @@ class BuyPlanTable(
 
     # Overwrite variables
     def set_filter_dict(self):
-        pass
+        self.filter_dict = dict()
 
     def post_action(self):
-        pass
+
+        cluster_user_list = self.post_filter_dict.get('cluster_user')
+        product_category_list = self.post_filter_dict.get('product_category')
+        product_style_list = self.post_filter_dict.get('product_style')
+        product_essential_trend_list = self.post_filter_dict.get('product_essential_trend')
+        product_basic_fashion_list = self.post_filter_dict.get('product_basic_fashion')
+
+        line_life_in_weeks_list = self.post_filter_dict.get('line_life_in_weeks')
+        rate_of_sales_list = self.post_filter_dict.get('rate_of_sales')
+        number_of_stores_list = self.post_filter_dict.get('number_of_stores')
+        targeted_sell_thru_list = self.post_filter_dict.get('targeted_sell_thru')
+
+        if cluster_user_list and product_category_list and product_essential_trend_list and product_basic_fashion_list:
+
+            # For RangeAssortment
+            for cluster_user, \
+                product_category, \
+                product_style, \
+                product_essential_trend, \
+                product_basic_fashion, \
+                line_life_in_weeks, \
+                rate_of_sales, \
+                number_of_stores, \
+                targeted_sell_thru, \
+            in zip(
+                cluster_user_list,
+                product_category_list,
+                product_style_list,
+                product_essential_trend_list,
+                product_basic_fashion_list,
+                line_life_in_weeks_list,
+                rate_of_sales_list,
+                number_of_stores_list,
+                targeted_sell_thru_list,
+            ):
+
+                low_level_queryset = self.model.objects.get(
+                    dim_iapfilter=self.dim_iapfilter,
+                    product_category=product_category,
+                    product_essential_trend=product_essential_trend,
+                    product_basic_fashion=product_basic_fashion,
+                    cluster_user=cluster_user,
+                    product_style=product_style,
+                )
+
+                # QUANTITY TO BUY
+                low_level_queryset.line_life_in_weeks = int(line_life_in_weeks.replace(',', ''))
+                low_level_queryset.rate_of_sales = float(rate_of_sales)
+                low_level_queryset.number_of_stores = int(number_of_stores.replace(',', ''))
+                low_level_queryset.targeted_sell_thru = convert_percentage(targeted_sell_thru)
+                low_level_queryset.quantity_to_buy = int(low_level_queryset.line_life_in_weeks * low_level_queryset.rate_of_sales * low_level_queryset.number_of_stores / (1 if low_level_queryset.targeted_sell_thru == 0 else low_level_queryset.targeted_sell_thru))
+
+                # OTB
+                low_level_queryset.otc_quantity = int(low_level_queryset.pricing_selling_price * low_level_queryset.quantity_to_buy)
+
+                # RANGE DEPTH BY STYLE BY COLOUR
+                low_level_queryset.range_effectiveness_style_colour_py = int(low_level_queryset.quantity_to_buy / (1 if low_level_queryset.range_width_style_colour_py == 0 else low_level_queryset.range_width_style_colour_py))
+
+                # SIZE CURVE
+                low_level_queryset.size_curve_xs = low_level_queryset.quantity_to_buy * 0.1
+                low_level_queryset.size_curve_s = low_level_queryset.quantity_to_buy * 0.2
+                low_level_queryset.size_curve_m = low_level_queryset.quantity_to_buy * 0.3
+                low_level_queryset.size_curve_l = low_level_queryset.quantity_to_buy * 0.3
+                low_level_queryset.size_curve_xl = low_level_queryset.quantity_to_buy * 0.1
+
+                # Save to database
+                low_level_queryset.save()
+
 
     def pre_action(self):
         pass

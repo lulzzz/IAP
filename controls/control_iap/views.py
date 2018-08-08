@@ -1224,7 +1224,7 @@ class BuyPlanningViewPlan(ContentView):
             cluster_user_list_of_dict.append(temp_dict)
 
         return {
-            'title': 'Range Planning',
+            'title': 'Buy Planning',
             'panel_list': [
                 {
                     'full_row': True,

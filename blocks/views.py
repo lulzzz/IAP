@@ -48,6 +48,7 @@ class TableRead(BlockView):
     header_list = None
     form_field_list = None
     format_list = None # 'strong', 'intcomma', 'image', 'link', 'image_link', 'checkbox', 'radiobox', None
+    column_styling_list = None
     bulk_action = False
     preselected_list = None
     tfoot = None
@@ -253,6 +254,7 @@ class TableRead(BlockView):
             'header_list': header_list,
             'data_list': data_list,
             'format_list': self.format_list,
+            'column_styling_list': self.column_styling_list,
             'form_field_list': self.form_field_list,
             'bulk_action': self.bulk_action,
             'tfoot': self.tfoot,

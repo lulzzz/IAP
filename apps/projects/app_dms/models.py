@@ -877,7 +877,7 @@ class RangeAssortment(models.Model, mixins_model.ModelFormFieldNames):
 
     # Unique fields
     dim_iapfilter = models.ForeignKey(DimIAPFilter, on_delete=models.CASCADE, default=1)
-    cluster_user = models.CharField(max_length=2)
+    cluster_user = models.CharField(verbose_name='cluster', max_length=2)
     product_category = models.CharField(verbose_name='product category', max_length=150)
     product_essential_trend = models.CharField(verbose_name='essential trend', max_length=100, blank=True, null=True)
     product_basic_fashion = models.CharField(verbose_name='basic fashion', max_length=100, blank=True, null=True)
@@ -967,7 +967,7 @@ class BuyPlan(models.Model, mixins_model.ModelFormFieldNames):
     id = models.AutoField(primary_key=True)
 
     # Unique fields
-    cluster_user = models.CharField(max_length=2)
+    cluster_user = models.CharField(verbose_name='cluster', max_length=2)
     dim_iapfilter = models.ForeignKey(DimIAPFilter, on_delete=models.CASCADE, default=1)
     product_category = models.CharField(verbose_name='product category', max_length=150)
     product_style = models.CharField(max_length=150, default='Style 1')
@@ -989,7 +989,7 @@ class BuyPlan(models.Model, mixins_model.ModelFormFieldNames):
     line_life_in_weeks = models.IntegerField(blank=True, null=True, default=0)
     rate_of_sales = models.FloatField(blank=True, null=True, default=0)
     number_of_stores = models.IntegerField(blank=True, null=True, default=0)
-    targeted_sell_thru = models.IntegerField(verbose_name='targeted sell thru %', blank=True, null=True, default=0)
+    targeted_sell_thru = models.FloatField(verbose_name='targeted sell thru %', blank=True, null=True, default=0)
     quantity_to_buy = models.IntegerField(blank=True, null=True, default=0)
 
     # OTB
@@ -1007,6 +1007,7 @@ class BuyPlan(models.Model, mixins_model.ModelFormFieldNames):
 
     # Frontend display
     form_field_list = [
+        'cluster_user',
         'product_division',
         'product_category',
         'product_style',
@@ -1034,41 +1035,6 @@ class BuyPlan(models.Model, mixins_model.ModelFormFieldNames):
         unique_together = (('dim_iapfilter', 'product_category', 'product_style', 'product_essential_trend', 'product_basic_fashion'),)
 
 
-# class DimMarkup(models.Model):
-#     country = models.CharField(max_length=500, blank=True, null=True)
-#     category = models.CharField(max_length=500, blank=True, null=True)
-#     markup = models.FloatField(blank=True, null=True)
-#
-#     class Meta:
-#         managed = False
-#
-#
-# class StagingBuyPlan(models.Model):
-#     product_group = models.CharField(max_length=500, blank=True, null=True)
-#     trend_ess = models.CharField(max_length=500, blank=True, null=True)
-#     bc_fc = models.CharField(max_length=500, blank=True, null=True)
-#     article_no = models.CharField(max_length=500, blank=True, null=True)
-#     style_name = models.CharField(max_length=500, blank=True, null=True)
-#     classification = models.CharField(max_length=500, blank=True, null=True)
-#     colour_name = models.CharField(max_length=500, blank=True, null=True)
-#     pgfascol = models.CharField(max_length=500, blank=True, null=True)
-#     delivery = models.IntegerField(blank=True, null=True)
-#     as400_collection_date = models.IntegerField(blank=True, null=True)
-#     delivery_date = models.CharField(max_length=500, blank=True, null=True)
-#     banding_grading = models.CharField(max_length=500, blank=True, null=True)
-#     rrp_in_eur = models.FloatField(blank=True, null=True)
-#     rrp_net = models.FloatField(blank=True, null=True)
-#     available_size_run = models.CharField(max_length=500, blank=True, null=True)
-#     lookup = models.CharField(max_length=500, blank=True, null=True)
-#     ean_code = models.BigIntegerField(blank=True, null=True)
-#     total_global_apl = models.FloatField(blank=True, null=True)
-#     retail_buy_units_style = models.IntegerField(blank=True, null=True)
-#     percentage_sbd = models.FloatField(blank=True, null=True)
-#
-#     class Meta:
-#         managed = False
-#
-#
 # class StagingOtbHighLevelInput(models.Model):
 #     region = models.CharField(max_length=500, blank=True, null=True)
 #     parameter_type = models.CharField(max_length=500, blank=True, null=True)

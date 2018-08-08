@@ -14,10 +14,19 @@
     {% csrf_token %}
 
     <table
-        class="table table-striped table-bordered {% if context_dict.is_datatable %}datatable load-js-controller{% endif %}"
+        class="table table-bordered {% if context_dict.is_datatable %}datatable load-js-controller{% endif %}"
         {% if context_dict.tfoot %}tfoot="{{ context_dict.tfoot }}"{% endif %}
         page_length="{{ context_dict.page_length }}"
     >
+
+        {% if context_dict.column_styling_list %}
+        <colgroup>
+            {% for row in context_dict.column_styling_list %}
+            <col style="background-color:{{ row }}"></col>
+            {% endfor %}
+        </colgroup>
+        {% endif %}
+
         <thead>
             <tr>
                 {% if context_dict.bulk_action == 'checkbox' %}

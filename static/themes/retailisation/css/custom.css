@@ -1,3 +1,59 @@
+/* table_read */
+table.datatable {
+    color: #807e7e;
+    border-color: #807e7e;
+}
+.table-bordered > tbody > tr > td, .table-bordered > tbody > tr > th, .table-bordered > tfoot > tr > td, .table-bordered > tfoot > tr > th, .table-bordered > thead > tr > td, .table-bordered > thead > tr > th {
+    border-color: #807e7e;
+}
+.table_read_tbody input[type="text"] {
+    width: 70px;
+}
+
+
+/* Selectpicker */
+.selectpicker_container {
+    margin-bottom: 20px;
+}
+
+.reportrange {
+    width: 220px;
+    background: #fff;
+    cursor: pointer;
+    padding: 5px 10px;
+    border: 1px solid #ccc;
+}
+
+/* Search */
+.top-search {
+    padding-top: 8px;
+    width: 100%;
+}
+
+.top-search .input-group {
+    width: 100%;
+}
+
+.top_nav .navbar-left {
+    width: 45%;
+}
+
+/* Animation */
+.glyphicon-refresh-animate {
+    -animation: spin .7s infinite linear;
+    -webkit-animation: spin2 .7s infinite linear;
+}
+
+@-webkit-keyframes spin2 {
+    from { -webkit-transform: rotate(0deg);}
+    to { -webkit-transform: rotate(360deg);}
+}
+
+@keyframes spin {
+    from { transform: scale(1) rotate(0deg);}
+    to { transform: scale(1) rotate(360deg);}
+}
+
 .center-block {
     margin: auto;
 }
