@@ -223,6 +223,8 @@ def update_mix_index(input_dict):
                 updated_value = round(getattr(entry, field) * Decimal(ratio), digits[field])
                 setattr(entry, field_input, updated_value)
 
+        session.commit()
+
 def get_decimal_count(x):
     """Count number of non null deicmal digits in a Decimal
     """
