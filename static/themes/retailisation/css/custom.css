@@ -10,6 +10,24 @@ table.datatable {
     width: 70px;
 }
 
+table.datatable thead tr {
+    background: repeating-linear-gradient(
+        45deg,
+        #FFFFFF,
+        #FFFFFF 10px,
+        #F7F7F7 10px,
+        #F7F7F7 20px
+    );
+    /* background: linear-gradient(
+        to bottom,
+        #FFFFFF,
+        #FFFFFF 50%,
+        #F7F7F7 50%,
+        #F7F7F7
+    );
+    background-size: 100% 20px; */
+}
+
 
 /* Selectpicker */
 .selectpicker_container {
