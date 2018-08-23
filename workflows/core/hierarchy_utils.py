@@ -40,6 +40,10 @@ input_dict = {
 """
 import sys
 import copy
+from decimal import *
+from collections import Counter
+import statistics
+
 import numpy as np
 import pandas as pd
 from slugify import slugify
@@ -200,6 +204,31 @@ def update_mix_index(input_dict):
                         setattr(database_item, map_code[attribute_code], entry[attribute_code])
 
         session.commit()
+
+        # == Step 6: Update additional fields accordingly
+        map_code, columns_mappings = get_mappings(input_dict)
+        updated_table = session.query(classes[table_name]).all()
+
+        # Find number of digits
+        digits = dict()
+        for field in input_dict['additional_fields'].keys():
+            decimals = [get_decimal_count(getattr(a, field) - getattr(b,field)) for a, b in zip(updated_table[:-1], updated_table[1:])]
+            digits[field] = round(statistics.mean(decimals))
+
+        for entry in updated_table:
+            original_value = getattr(entry, map_code['value'])
+            updated_value = getattr(entry, map_code['value_input'])
+            ratio = updated_value / original_value
+            for field, field_input in input_dict['additional_fields'].items():
+                updated_value = round(getattr(entry, field) * Decimal(ratio), digits[field])
+                setattr(entry, field_input, updated_value)
+
+def get_decimal_count(x):
+    """Count number of non null deicmal digits in a Decimal
+    """
+    n_decimals = -x.as_tuple().exponent
+    decimals = [int(x*(10**i)) % 10 for i in range(1, n_decimals + 1)]
+    return n_decimals - Counter(decimals).most_common()[0][1]
 
 def get_mappings(input_dict):
     r"""Create mappings between input fields and """
