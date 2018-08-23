@@ -1035,21 +1035,12 @@ class PlanByStoreTable(
                 'unit_sales_py_mix': 'unit_sales_py',
                 'unit_sales_ly': 'unit_sales_py',
             },
+            'additional_fields': {
+                'value_sales_ly': 'value_sales_py'
+            },
             'data': self.post_filter_dict
         }
         update_mix_index(smart_save_input_dict)
-        # smart_save_input_dict = {
-        #     'model': self.model._meta.db_table,
-        #     'key_field': self.xaxis, # product_category
-        #     'levels': ['cluster_user', 'store_code',],
-        #     'field_reference': {
-        #         'unit_sales_py_index': 'value_sales_py',
-        #         'unit_sales_py_mix': 'value_sales_py',
-        #         'value_sales_ly': 'value_sales_py',
-        #     },
-        #     'data': self.post_filter_dict
-        # }
-        # update_mix_index(smart_save_input_dict)
 
         # Additional calculations (update consensus plan)
         total_unit_sales_py = self.model.objects.aggregate(Sum('unit_sales_py')).get('unit_sales_py__sum')
