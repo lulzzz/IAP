@@ -1065,8 +1065,7 @@ class StrategicSalesPlan(models.Model, mixins_model.ModelFormFieldNames):
 
     # Level specific fields
     gross_sales_index = models.FloatField(default=1, blank=True, null=True)
-    seasonal_mix = models.FloatField(default=0, blank=True, null=True)
-    channel_mix = models.FloatField(default=0, blank=True, null=True)
+    sales_year_mix = models.FloatField(default=0, blank=True, null=True)
 
     # Informative fields
     row_styling = models.CharField(max_length=45, blank=True, null=True)
