@@ -212,7 +212,6 @@ class PlanByProductCategorySerializer(
         fields = model.get_form_field_names_tuple(model)
 
 
-
 class DimLocationSerializer(
     mixins_serializer.RegionLookup,
     serializers.ModelSerializer
@@ -256,14 +255,45 @@ class RangeMasterSerializer(
         fields = model.get_form_field_names_tuple(model)
 
     # Validation rules
-    def validate_product_division(self, value):
-        model_item = models.DimProduct.objects.filter(division__icontains=value)
+    def validate(self, data):
+        model_item = models.DimProduct.objects.filter(category__icontains=data['product_category'])
         if model_item.count() > 0:
-            return model_item.first().division
-        raise serializers.ValidationError('Value must exist in product master.')
+            data['product_category'] = model_item.first().category
+            data['product_division'] = models.DimProduct.objects.filter(category=data['product_category']).first().division
+            return data
+        raise serializers.ValidationError('Product category must exist in product master (or at least have a similar value existing).')
 
-    def validate_product_category(self, value):
-        model_item = models.DimProduct.objects.filter(category__icontains=value)
+
+class SizeCurveSerializer(
+    serializers.ModelSerializer
+):
+    r"""
+    Serializer for master table
+    """
+
+    # Read-only fields
+    id = serializers.IntegerField(read_only=True)
+
+    class Meta:
+        model = models.SizeCurve
+        fields = model.get_form_field_names_tuple(model)
+
+    # Validation rules
+    def validate(self, data):
+        model_item = models.DimProduct.objects.filter(category__icontains=data['product_category'])
         if model_item.count() > 0:
-            return model_item.first().category
-        raise serializers.ValidationError('Value must exist in product master (or at least have a similar product category existing).')
+            data['product_category'] = model_item.first().category
+            data['product_division'] = models.DimProduct.objects.filter(category=data['product_category']).first().division
+        else:
+            raise serializers.ValidationError('Product category must exist in product master (or at least have a similar value existing).')
+
+        data['xs'] = round(data['xs'], 2)
+        data['s'] = round(data['s'], 2)
+        data['m'] = round(data['m'], 2)
+        data['l'] = round(data['l'], 2)
+        data['xl'] = round(data['xl'], 2)
+        size_sum = round(data['xs'] + data['s'] + data['m'] + data['l'] + data['xl'], 2)
+        if size_sum == 1:
+            return data
+        else:
+            raise serializers.ValidationError('Sum of all sizes must be 1 (= 100%). Current sum is ' + str(size_sum))

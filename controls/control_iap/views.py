@@ -1249,6 +1249,15 @@ class BuyPlanningViewPlan(ContentView):
                         },
                     ],
                 },
+                {
+                    'full_row': True,
+                    'title': 'Size Curve',
+                    'type': 'table',
+                    'url': reverse_lazy('master_table'),
+                    'url_action': reverse_lazy('handsontable', kwargs={'item': 'SizeCurve'}),
+                    'url_action_helper': reverse_lazy('handsontable_header', kwargs={'item': 'SizeCurve'}),
+                    'width': 12,
+                },
             ]
         }
 

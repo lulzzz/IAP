@@ -958,6 +958,44 @@ class RangeMaster(models.Model, mixins_model.ModelFormFieldNames):
 # r"""
 # Buy planning
 # """
+class SizeCurve(models.Model, mixins_model.ModelFormFieldNames):
+    r'''
+    Model for buy plan
+    '''
+    # Unique fields
+    id = models.AutoField(primary_key=True)
+
+    # Unique fields
+    dim_iapfilter = models.ForeignKey(DimIAPFilter, on_delete=models.CASCADE, default=1)
+    product_category = models.CharField(verbose_name='product category', max_length=150)
+
+    # Attribute fields
+    product_division = models.CharField(verbose_name='product group', max_length=150)
+
+    # SIZE CURVE
+    xs = models.FloatField(verbose_name='size curve XS', blank=True, null=True, default=0.1)
+    s = models.FloatField(verbose_name='size curve S', blank=True, null=True, default=0.2)
+    m = models.FloatField(verbose_name='size curve M', blank=True, null=True, default=0.3)
+    l = models.FloatField(verbose_name='size curve L', blank=True, null=True, default=0.3)
+    xl = models.FloatField(verbose_name='size curve XL', blank=True, null=True, default=0.1)
+
+    # Frontend display
+    form_field_list = [
+        'id',
+        'product_division',
+        'product_category',
+        'xs',
+        's',
+        'm',
+        'l',
+        'xl',
+    ]
+
+    class Meta:
+        unique_together = (('dim_iapfilter', 'product_category'),)
+
+
+
 class BuyPlan(models.Model, mixins_model.ModelFormFieldNames):
     r'''
     Model for buy plan
@@ -999,11 +1037,11 @@ class BuyPlan(models.Model, mixins_model.ModelFormFieldNames):
     range_effectiveness_style_colour_py = models.IntegerField(verbose_name='range effectiveness', blank=True, null=True, default=0)
 
     # SIZE CURVE
-    size_curve_xs = models.IntegerField(verbose_name='size curve XS (10%)', blank=True, null=True, default=0)
-    size_curve_s = models.IntegerField(verbose_name='size curve S (20%)', blank=True, null=True, default=0)
-    size_curve_m = models.IntegerField(verbose_name='size curve M (30%)', blank=True, null=True, default=0)
-    size_curve_l = models.IntegerField(verbose_name='size curve L (30%)', blank=True, null=True, default=0)
-    size_curve_xl = models.IntegerField(verbose_name='size curve XL (10%)', blank=True, null=True, default=0)
+    size_curve_xs = models.IntegerField(verbose_name='size curve XS', blank=True, null=True, default=0)
+    size_curve_s = models.IntegerField(verbose_name='size curve S', blank=True, null=True, default=0)
+    size_curve_m = models.IntegerField(verbose_name='size curve M', blank=True, null=True, default=0)
+    size_curve_l = models.IntegerField(verbose_name='size curve L', blank=True, null=True, default=0)
+    size_curve_xl = models.IntegerField(verbose_name='size curve XL', blank=True, null=True, default=0)
 
     # Frontend display
     form_field_list = [
