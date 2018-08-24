@@ -68,13 +68,13 @@
                                 <strong>{{ col }}</strong><input type="hidden" name="{{ context_dict.form_field_list|index:forloop.counter0 }}" value="{{ col }}" />
 
                             {% elif context_dict.format_list|index:forloop.counter0 == 'input_intcomma' %}
-                                <input type="text" name="{{ context_dict.form_field_list|index:forloop.counter0 }}" value="{{ col|intcomma }}" />
+                                <input type="text" name="{{ context_dict.form_field_list|index:forloop.counter0 }}" value="{{ col|intcomma_rounding2 }}" />
 
                             {% elif context_dict.format_list|index:forloop.counter0 == 'input_intcomma_rounding0' %}
                                 <input type="text" name="{{ context_dict.form_field_list|index:forloop.counter0 }}" value="{{ col|intcomma_rounding0 }}" />
 
                             {% elif context_dict.format_list|index:forloop.counter0 == 'input_currencyeur' %}
-                                <input type="text" name="{{ context_dict.form_field_list|index:forloop.counter0 }}" value="EUR {{ col|intcomma }}" />
+                                <input type="text" name="{{ context_dict.form_field_list|index:forloop.counter0 }}" value="EUR {{ col|intcomma_rounding2 }}" />
 
                             {% elif context_dict.format_list|index:forloop.counter0 == 'input_percentagecomma' %}
                                 <input type="text" name="{{ context_dict.form_field_list|index:forloop.counter0 }}" value="{{ col|percentagemultiplied }}" />

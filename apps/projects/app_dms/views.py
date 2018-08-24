@@ -1147,7 +1147,7 @@ class StrategicSalesPlanTable(views.TableRead):
             	'intcomma_rounding0', # buying_budget
             	'input_percentagecomma', # gmroi_percentage_target
             	'intcomma_rounding0', # beginning_season_inventory
-            	'input_intcomma_rounding0', # markdown
+            	'input_intcomma', # markdown
             	'intcomma_rounding0', # ending_season_inventory
                 'intcomma_rounding0', # average_cost_of_inventory
                 'intcomma_rounding0', # intake_beginning_of_season
@@ -1156,7 +1156,7 @@ class StrategicSalesPlanTable(views.TableRead):
             self.aggregation_dict = {
                 'values': ['row_styling', 'sales_year', 'sales_season'],
                 'logic': {
-                    'sales_year_mix_min': Min('sales_year_mix'), # input
+                    'sales_year_mix_min': Sum('sales_year_mix'), # input
                     'gross_sales_sum': Sum('gross_sales'),
                     'discounts_sum': Sum('discounts'), # input
                     'returns_sum': Sum('returns'), # input
@@ -1250,7 +1250,7 @@ class StrategicSalesPlanTable(views.TableRead):
             	'intcomma_rounding0', # buying_budget
             	'input_percentagecomma', # gmroi_percentage_target
             	'intcomma_rounding0', # beginning_season_inventory
-            	'input_intcomma_rounding0', # markdown
+            	'input_intcomma', # markdown
             	'intcomma_rounding0', # ending_season_inventory
                 'intcomma_rounding0', # average_cost_of_inventory
                 'intcomma_rounding0', # intake_beginning_of_season
@@ -1259,7 +1259,7 @@ class StrategicSalesPlanTable(views.TableRead):
             self.aggregation_dict = {
                 'values': ['row_styling', 'sales_year', 'dim_channel__name'],
                 'logic': {
-                    'sales_year_mix_min': Min('sales_year_mix'), # input
+                    'sales_year_mix_min': Sum('sales_year_mix'), # input
                     'gross_sales_sum': Sum('gross_sales'),
                     'discounts_sum': Sum('discounts'), # input
                     'returns_sum': Sum('returns'), # input
@@ -1349,7 +1349,7 @@ class StrategicSalesPlanTable(views.TableRead):
             	'intcomma_rounding0', # buying_budget
             	'input_percentagecomma', # gmroi_percentage_target
             	'intcomma_rounding0', # beginning_season_inventory
-            	'input_intcomma_rounding0', # markdown
+            	'input_intcomma', # markdown
             	'intcomma_rounding0', # ending_season_inventory
                 'intcomma_rounding0', # average_cost_of_inventory
                 'intcomma_rounding0', # intake_beginning_of_season
@@ -1418,7 +1418,7 @@ class StrategicSalesPlanTable(views.TableRead):
             elif sales_season:
                 high_level_queryset = self.model.objects.filter(sales_year=sales_year, sales_season=sales_season)
             elif channel:
-                high_level_queryset = self.model.objects.filter(sales_year=sales_year, channel=channel)
+                high_level_queryset = self.model.objects.filter(sales_year=sales_year, dim_channel__name=channel)
             else:
                 break
 
@@ -1429,10 +1429,10 @@ class StrategicSalesPlanTable(views.TableRead):
 
             for low_level in high_level_queryset.all():
                 low_level_queryset = self.model.objects.get(
-                    sales_year=sales_year,
-                    region=region,
+                    sales_year=low_level.sales_year,
+                    region=low_level.region,
                     sales_season=low_level.sales_season,
-                    dim_channel=low_level.dim_channel,
+                    dim_channel__name=low_level.dim_channel,
                 )
 
                 # discounts
@@ -1449,17 +1449,17 @@ class StrategicSalesPlanTable(views.TableRead):
 
                 # markdown
                 if sum_markdown > 0:
-                    low_level_queryset.markdown = int(markdown.replace(',', '')) * low_level_queryset.markdown/sum_markdown
+                    low_level_queryset.markdown = float(markdown.replace(',', '')) * low_level_queryset.markdown/sum_markdown
                 else:
-                    low_level_queryset.markdown = int(markdown.replace(',', '')) / high_level_queryset.count()
+                    low_level_queryset.markdown = float(markdown.replace(',', '')) / high_level_queryset.count()
 
                 if sum_gross_sales_init > 0:
                     # gross_sales_index
                     if gross_sales_index:
                         low_level_queryset.gross_sales_index = int(gross_sales_index.replace(',', ''))
                     # sales_year_mix
-                    if sales_year_mix:
-                        low_level_queryset.sales_year_mix = convert_percentage(sales_year_mix.replace(',', ''))
+                    # if sales_year_mix:
+                    #     low_level_queryset.sales_year_mix = convert_percentage(sales_year_mix.replace(',', ''))
 
                 # gross_sales
                 low_level_queryset.gross_sales = sum_gross_sales_init * low_level_queryset.gross_sales_index
@@ -1485,8 +1485,8 @@ class StrategicSalesPlanTable(views.TableRead):
             item.gross_margin = item.net_sales * item.gross_margin_percentage
             item.gross_sales_per_unit = item.gross_sales / item.asp
             item.buying_budget = item.sell_in / item.markup if item.markup > 0 else item.sell_in
-            item.beginning_season_inventory = 0
-            item.ending_season_inventory = item.beginning_season_inventory - item.net_sales - item.markdown
+            # item.beginning_season_inventory = 0
+            # item.ending_season_inventory = item.beginning_season_inventory - item.net_sales - item.markdown
             item.save()
 
 
