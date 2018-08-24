@@ -966,7 +966,7 @@ class SizeCurve(models.Model, mixins_model.ModelFormFieldNames):
     id = models.AutoField(primary_key=True)
 
     # Unique fields
-    dim_iapfilter = models.ForeignKey(DimIAPFilter, on_delete=models.CASCADE, default=1)
+    dim_iapfilter = models.ForeignKey(DimIAPFilter, on_delete=models.CASCADE, default=8)
     product_category = models.CharField(verbose_name='product category', max_length=150)
 
     # Attribute fields

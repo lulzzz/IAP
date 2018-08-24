@@ -1156,7 +1156,7 @@ class StrategicSalesPlanTable(views.TableRead):
             self.aggregation_dict = {
                 'values': ['row_styling', 'sales_year', 'sales_season'],
                 'logic': {
-                    'seasonal_mix_min': Min('seasonal_mix'), # input
+                    'sales_year_mix_min': Min('sales_year_mix'), # input
                     'gross_sales_sum': Sum('gross_sales'),
                     'discounts_sum': Sum('discounts'), # input
                     'returns_sum': Sum('returns'), # input
@@ -1259,7 +1259,7 @@ class StrategicSalesPlanTable(views.TableRead):
             self.aggregation_dict = {
                 'values': ['row_styling', 'sales_year', 'dim_channel__name'],
                 'logic': {
-                    'channel_mix_min': Min('channel_mix'), # input
+                    'sales_year_mix_min': Min('sales_year_mix'), # input
                     'gross_sales_sum': Sum('gross_sales'),
                     'discounts_sum': Sum('discounts'), # input
                     'returns_sum': Sum('returns'), # input
@@ -1387,8 +1387,7 @@ class StrategicSalesPlanTable(views.TableRead):
         sales_season_list = self.post_filter_dict.get('sales_season', empty_list)
         region_list = self.post_filter_dict.get('region', empty_list)
         channel_list = self.post_filter_dict.get('channel', empty_list)
-        seasonal_mix_list = self.post_filter_dict.get('seasonal_mix', empty_list)
-        channel_mix_list = self.post_filter_dict.get('channel_mix', empty_list)
+        sales_year_mix_list = self.post_filter_dict.get('sales_year_mix', empty_list)
         gross_sales_index_list = self.post_filter_dict.get('gross_sales_index', empty_list)
         discounts_list = self.post_filter_dict.get('discounts')
         returns_list = self.post_filter_dict.get('returns')
@@ -1398,13 +1397,12 @@ class StrategicSalesPlanTable(views.TableRead):
         gmroi_percentage_target_list = self.post_filter_dict.get('gmroi_percentage_target')
         markdown_list = self.post_filter_dict.get('markdown')
 
-        for sales_year, sales_season, region, channel, seasonal_mix, channel_mix, gross_sales_index, discounts, returns, sell_through_ratio, markup, gross_margin_percentage, gmroi_percentage_target, markdown in zip(
+        for sales_year, sales_season, region, channel, sales_year_mix, gross_sales_index, discounts, returns, sell_through_ratio, markup, gross_margin_percentage, gmroi_percentage_target, markdown in zip(
             sales_year_list,
             sales_season_list,
             region_list,
             channel_list,
-            seasonal_mix_list,
-            channel_mix_list,
+            sales_year_mix_list,
             gross_sales_index_list,
             discounts_list,
             returns_list,
@@ -1459,15 +1457,13 @@ class StrategicSalesPlanTable(views.TableRead):
                     # gross_sales_index
                     if gross_sales_index:
                         low_level_queryset.gross_sales_index = int(gross_sales_index.replace(',', ''))
-                    # seasonal_mix
-                    if seasonal_mix:
-                        low_level_queryset.seasonal_mix = convert_percentage(seasonal_mix.replace(',', ''))
-                    # seasonal_mix
-                    if channel_mix:
-                        low_level_queryset.channel_mix = convert_percentage(channel_mix.replace(',', ''))
+                    # sales_year_mix
+                    if sales_year_mix:
+                        low_level_queryset.sales_year_mix = convert_percentage(sales_year_mix.replace(',', ''))
 
                 # gross_sales
-                low_level_queryset.gross_sales = sum_gross_sales_init * low_level_queryset.gross_sales_index * low_level_queryset.seasonal_mix * low_level_queryset.channel_mix
+                low_level_queryset.gross_sales = sum_gross_sales_init * low_level_queryset.gross_sales_index
+                # low_level_queryset.gross_sales = sum_gross_sales_init * low_level_queryset.gross_sales_index * low_level_queryset.sales_year_mix
 
                 # sell_through_ratio
                 low_level_queryset.sell_through_ratio = convert_percentage(sell_through_ratio.replace(',', ''))
@@ -1996,6 +1992,7 @@ class BuyPlanTable(
                 'position_left': True,
             }
         }
+        self.init_class_dict(request)
         self.pre_action()
         return self.display(request)
 
@@ -2005,6 +2002,27 @@ class BuyPlanTable(
         temp_dict['dim_iapfilter'] = self.dim_iapfilter
         temp_dict['cluster_user__in'] = self.filter_dict.get('cluster_user__in')
         self.filter_dict = temp_dict
+
+    def pre_action(self):
+
+        for low_level_queryset in self.model.objects.filter(dim_iapfilter=self.dim_iapfilter).all():
+
+            # SizeCurve fields
+            size_curve = models.SizeCurve.objects.get(
+                dim_iapfilter=low_level_queryset.dim_iapfilter,
+                product_category=low_level_queryset.product_category,
+            )
+
+            # SIZE CURVE
+            low_level_queryset.size_curve_xs = low_level_queryset.quantity_to_buy * size_curve.xs
+            low_level_queryset.size_curve_s = low_level_queryset.quantity_to_buy * size_curve.s
+            low_level_queryset.size_curve_m = low_level_queryset.quantity_to_buy * size_curve.m
+            low_level_queryset.size_curve_l = low_level_queryset.quantity_to_buy * size_curve.l
+            low_level_queryset.size_curve_xl = low_level_queryset.quantity_to_buy * size_curve.xl
+
+            # Save to database
+            low_level_queryset.save()
+
 
     def post_action(self):
 
@@ -2065,19 +2083,8 @@ class BuyPlanTable(
                 # RANGE DEPTH BY STYLE BY COLOUR
                 low_level_queryset.range_effectiveness_style_colour_py = int(low_level_queryset.quantity_to_buy / (1 if low_level_queryset.range_width_style_colour_py == 0 else low_level_queryset.range_width_style_colour_py))
 
-                # SIZE CURVE
-                low_level_queryset.size_curve_xs = low_level_queryset.quantity_to_buy * 0.1
-                low_level_queryset.size_curve_s = low_level_queryset.quantity_to_buy * 0.2
-                low_level_queryset.size_curve_m = low_level_queryset.quantity_to_buy * 0.3
-                low_level_queryset.size_curve_l = low_level_queryset.quantity_to_buy * 0.3
-                low_level_queryset.size_curve_xl = low_level_queryset.quantity_to_buy * 0.1
-
                 # Save to database
                 low_level_queryset.save()
-
-
-    def pre_action(self):
-        pass
 
 
 class TokenFieldDimProductStyle(views.TokenFieldAPI):

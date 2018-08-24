@@ -3,6 +3,7 @@ from . import models
 class DMSFilter():
 
     def init_class_dict_mixin(self):
+
         # Check if user has done a selection
         user_filter_query = models.DimIAPFilterUser.objects.filter(user=self.user)
         if user_filter_query.exists():

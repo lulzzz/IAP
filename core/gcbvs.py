@@ -167,9 +167,6 @@ class BlockView(LoginEnvironmentView):
     def prepare_variables(self):
         pass
 
-    def init_class_dict_mixin(self):
-        pass
-
     def display(self, request):
         return render(request, self.template_name, {
             'context_dict': self.context_dict,
