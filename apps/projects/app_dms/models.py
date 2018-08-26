@@ -1073,6 +1073,42 @@ class BuyPlan(models.Model, mixins_model.ModelFormFieldNames):
         unique_together = (('dim_iapfilter', 'cluster_user', 'product_category', 'product_style', 'product_essential_trend', 'product_basic_fashion'),)
 
 
+class OTBPlanSupport(models.Model, mixins_model.ModelFormFieldNames):
+    r'''
+    Model for OTB plan supporting table
+    '''
+
+    # Unique fields
+    id = models.AutoField(primary_key=True)
+
+    # Unique fields
+    dim_iapfilter = models.ForeignKey(DimIAPFilter, on_delete=models.CASCADE, default=1)
+    region = models.CharField(max_length=45)
+
+    # SALES
+    net_sales = models.IntegerField(default=0)
+    trade_product_sales = models.IntegerField(default=0)
+    total_sales = models.IntegerField(default=0)
+    average_vat_percentage = models.FloatField(default=0)
+    average_vat = models.IntegerField(verbose_name='average VAT', default=0)
+    gross_sales = models.IntegerField(default=0)
+
+    # Frontend display
+    form_field_list = [
+        'region',
+        'net_sales',
+        'trade_product_sales',
+        'total_sales',
+        'average_vat_percentage',
+        'average_vat',
+        'gross_sales',
+    ]
+
+    class Meta:
+        unique_together = (('dim_iapfilter', 'region',),)
+
+
+
 class OTBPlan(models.Model, mixins_model.ModelFormFieldNames):
     r'''
     Model for OTB plan
@@ -1158,17 +1194,6 @@ class OTBPlan(models.Model, mixins_model.ModelFormFieldNames):
 
     class Meta:
         unique_together = (('dim_iapfilter', 'region', 'product_division',),)
-
-
-
-# class StagingOtbHighLevelInput(models.Model):
-#     region = models.CharField(max_length=500, blank=True, null=True)
-#     parameter_type = models.CharField(max_length=500, blank=True, null=True)
-#     parameter_name = models.CharField(max_length=500, blank=True, null=True)
-#     value = models.FloatField(blank=True, null=True)
-#
-#     class Meta:
-#         managed = False
 
 
 r"""
