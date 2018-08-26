@@ -1005,8 +1005,8 @@ class BuyPlan(models.Model, mixins_model.ModelFormFieldNames):
     id = models.AutoField(primary_key=True)
 
     # Unique fields
-    cluster_user = models.CharField(verbose_name='cluster', max_length=2)
     dim_iapfilter = models.ForeignKey(DimIAPFilter, on_delete=models.CASCADE, default=1)
+    cluster_user = models.CharField(verbose_name='cluster', max_length=2)
     product_category = models.CharField(verbose_name='product category', max_length=150)
     product_style = models.CharField(max_length=150, default='Style 1')
     product_essential_trend = models.CharField(verbose_name='essential trend', max_length=100, blank=True, null=True)
@@ -1070,7 +1070,95 @@ class BuyPlan(models.Model, mixins_model.ModelFormFieldNames):
     ]
 
     class Meta:
-        unique_together = (('dim_iapfilter', 'product_category', 'product_style', 'product_essential_trend', 'product_basic_fashion'),)
+        unique_together = (('dim_iapfilter', 'cluster_user', 'product_category', 'product_style', 'product_essential_trend', 'product_basic_fashion'),)
+
+
+class OTBPlan(models.Model, mixins_model.ModelFormFieldNames):
+    r'''
+    Model for OTB plan
+    '''
+
+    # Unique fields
+    id = models.AutoField(primary_key=True)
+
+    # Unique fields
+    dim_iapfilter = models.ForeignKey(DimIAPFilter, on_delete=models.CASCADE, default=1)
+    region = models.CharField(max_length=45)
+    product_division = models.CharField(verbose_name='product group', max_length=150)
+
+    # ESSENTIAL FASHION
+    net_sales_essential_fashion_py = models.IntegerField(verbose_name='net sales essential fashion', default=0)
+    mix_essential_fashion_py = models.FloatField(verbose_name='essential fashion mix PY', default=0)
+    mix_essential_fashion_ly = models.FloatField(verbose_name='essential fashion mix LY', default=0)
+
+    # TREND
+    net_sales_trend_py = models.IntegerField(verbose_name='net sales trend', default=0)
+    mix_trend_py = models.FloatField(verbose_name='trend mix PY', default=0)
+    mix_trend_ly = models.FloatField(verbose_name='trend mix LY', default=0)
+
+    # ESSENTIAL FASHION + TREND
+    net_sales_essential_fashion_and_trend_py = models.IntegerField(verbose_name='net sales essential fashion and trend', default=0)
+    average_discount_rate = models.FloatField(default=0)
+    total_discount = models.IntegerField(default=0)
+    gross_sales_essential_fashion_and_trend_py = models.IntegerField(verbose_name='gross sales essential fashion and trend', default=0)
+
+    # RATES
+    after_sale_sellthru_rate = models.FloatField(default=0)
+    before_sale_sellthru_rate = models.FloatField(default=0)
+    discount_in_sale_rate = models.FloatField(default=0)
+
+    # SELL IN FULL PRICE
+    sell_in_full_price = models.IntegerField(default=0)
+
+    # YELLOW CALCULATIONS
+    insale_net_sales = models.IntegerField(default=0)
+    net_sales_sale = models.IntegerField(default=0)
+    discount_in_sale = models.IntegerField(default=0)
+    difference_in_discount = models.IntegerField(default=0)
+
+    # BUYING BUDGET
+    end_of_season_inventory = models.IntegerField(default=0)
+    total_sell_in = models.IntegerField(verbose_name='total sell-in', default=0)
+    markup_rate = models.FloatField(verbose_name='mark-up rate', default=0)
+    total_buying_budget = models.IntegerField(default=0)
+    average_vat_percentage = models.FloatField(verbose_name='average VAT %', default=0)
+    total_buying_budget_adjusted_for_vat = models.IntegerField(verbose_name='total buying budget adjusted for VAT', default=0)
+
+    # Frontend display
+    form_field_list = [
+        'region',
+        'product_division',
+
+        # ESSENTIAL FASHION + TREND
+        'net_sales_essential_fashion_py',
+        'net_sales_trend_py',
+        'mix_essential_fashion_py',
+        'mix_trend_py',
+        'mix_essential_fashion_ly',
+        'mix_trend_ly',
+        'net_sales_essential_fashion_and_trend_py',
+        'average_discount_rate',
+        'total_discount',
+        'gross_sales_essential_fashion_and_trend_py',
+
+        # RATES
+        'after_sale_sellthru_rate',
+        'before_sale_sellthru_rate',
+        'discount_in_sale_rate',
+        'sell_in_full_price',
+
+        # BUYING BUDGET
+        'end_of_season_inventory',
+        'total_sell_in',
+        'markup_rate',
+        'total_buying_budget',
+        'average_vat_percentage',
+        'total_buying_budget_adjusted_for_vat',
+    ]
+
+    class Meta:
+        unique_together = (('dim_iapfilter', 'region', 'product_division',),)
+
 
 
 # class StagingOtbHighLevelInput(models.Model):

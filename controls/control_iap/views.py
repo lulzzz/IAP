@@ -234,7 +234,7 @@ class BaseView(
                                         },
                                         # {
                                         #     'name': 'buy_planning_tab_otb',
-                                        #     'label': 'Range Architecture',
+                                        #     'label': 'OTB Plan',
                                         #     'url': reverse_lazy('range_planning_tab_architecture').replace('/', '#', 1),
                                         # },
                                     ]
