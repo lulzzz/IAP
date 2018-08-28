@@ -9,5 +9,3 @@ from workflows.core.database_utils import db_connect
 
 engine = db_connect()
 Session = sessionmaker(bind=engine)
-
-print('Workflow started...')

@@ -358,7 +358,6 @@ class FeatureStoreInput(models.Model, mixins_model.ModelFormFieldNames):
     net_retail_sales_in_eur_ty = models.FloatField(verbose_name='net sales TY (EUR)', blank=True, null=True)
     average_monthly_sales_for_ty = models.FloatField(verbose_name='average monthly sales TY (EUR)', blank=True, null=True)
     sku_count = models.IntegerField(verbose_name='SKU count', blank=True, null=True)
-    relative_sales_volume_ty = models.FloatField(verbose_name='relative sales TY (EUR)', blank=True, null=True)
     average_value_transaction = models.FloatField(verbose_name='ASP (EUR)', blank=True, null=True)
     sales_swimwear = models.FloatField(verbose_name='net sales swimwear TY (EUR)', blank=True, null=True)
     sales_lingerie = models.FloatField(verbose_name='net sales lingerie TY (EUR)', blank=True, null=True)
@@ -384,7 +383,6 @@ class FeatureStoreInput(models.Model, mixins_model.ModelFormFieldNames):
         'country', # read only
         'net_retail_sales_in_eur_ty',
         # 'average_monthly_sales_for_ty',
-        'relative_sales_volume_ty',
         'sku_count',
         'average_value_transaction',
         'sales_lingerie',
@@ -1107,6 +1105,29 @@ class OTBPlanSupport(models.Model, mixins_model.ModelFormFieldNames):
     class Meta:
         unique_together = (('dim_iapfilter', 'region',),)
 
+
+class OTBPlanMix(models.Model, mixins_model.ModelFormFieldNames):
+    r'''
+    Model for OTB plan mix table
+    '''
+
+    # Unique fields
+    id = models.AutoField(primary_key=True)
+
+    # Unique fields
+    dim_iapfilter = models.ForeignKey(DimIAPFilter, on_delete=models.CASCADE, default=1)
+    region = models.CharField(max_length=45)
+
+    # MIX
+    mix = models.FloatField(default=0)
+
+    # Frontend display
+    form_field_list = [
+        'region',
+    ]
+
+    class Meta:
+        unique_together = (('dim_iapfilter', 'region',),)
 
 
 class OTBPlan(models.Model, mixins_model.ModelFormFieldNames):
