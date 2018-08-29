@@ -27,7 +27,8 @@ $(document).ready(function() {
                 bInfo: has_pagination,
                 autoWidth: false,
                 responsive: false,
-                buttons: [{
+                buttons: [
+                    {
                         extend: 'copy',
                         className: 'btn-sm'
                     },
@@ -39,14 +40,14 @@ $(document).ready(function() {
                         extend: 'excel',
                         className: 'btn-sm'
                     },
-                    {
-                        extend: 'pdfHtml5',
-                        className: 'btn-sm'
-                    },
-                    {
-                        extend: 'print',
-                        className: 'btn-sm'
-                    },
+                    // {
+                    //     extend: 'pdfHtml5',
+                    //     className: 'btn-sm'
+                    // },
+                    // {
+                    //     extend: 'print',
+                    //     className: 'btn-sm'
+                    // },
                 ],
                 footerCallback: function ( row, data, start, end, display ) {
 
