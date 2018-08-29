@@ -2087,6 +2087,187 @@ class BuyPlanTable(
                 low_level_queryset.save()
 
 
+class OTBSupportTable(
+    project_mixins_view.DMSFilter,
+    views.TableRead
+):
+    r"""
+    View that shows the OTB support table (seasonal sales with VAT)
+    """
+
+    model = models.OTBPlanSupport
+    post_amends_filter_dict = True
+    # page_length = 'unlimited'
+
+    format_list = [
+        'input_key', # region
+        'intcomma_rounding0', # net_sales
+        'input_intcomma_rounding0', # trade_product_sales
+        'strong_intcomma_rounding0', # total_sales
+        'input_percentagecomma', # average_vat_percentage
+        'intcomma_rounding0', # average_vat
+        'strong_intcomma_rounding0', # gross_sales
+    ]
+    column_styling_list = [
+        'transparent', # region
+        'transparent', # net_sales
+        'transparent', # trade_product_sales
+        'transparent', # total_sales
+        'transparent', # average_vat_percentage
+        'transparent', # average_vat
+    ]
+
+    # Return empty table GET
+    def get(self, request):
+        self.context_dict = {
+            'message': {
+                'text': 'Table will be loaded after clicking the "Refresh" button.',
+                'type': 'info',
+                'position_left': True,
+            }
+        }
+        self.init_class_dict(request)
+        self.pre_action()
+        return self.display(request)
+
+    # Overwrite variables
+    def set_filter_dict(self):
+        temp_dict = dict()
+        print(self.dim_iapfilter)
+        temp_dict['dim_iapfilter'] = self.dim_iapfilter
+        temp_dict['region__in'] = self.filter_dict.get('region__in')
+        self.filter_dict = temp_dict
+
+    def pre_action(self):
+        for low_level_queryset in self.model.objects.filter(dim_iapfilter=self.dim_iapfilter).all():
+
+            # Calculations
+            low_level_queryset.total_sales = low_level_queryset.net_sales + low_level_queryset.trade_product_sales
+            low_level_queryset.average_vat = low_level_queryset.total_sales * low_level_queryset.average_vat_percentage
+            low_level_queryset.gross_sales = low_level_queryset.total_sales + low_level_queryset.average_vat
+
+            # Save to database
+            low_level_queryset.save()
+
+    def post_action(self):
+        region_list = self.post_filter_dict.get('region')
+        trade_product_sales_list = self.post_filter_dict.get('trade_product_sales')
+        average_vat_percentage_list = self.post_filter_dict.get('average_vat_percentage')
+
+        if region_list and trade_product_sales_list and average_vat_percentage_list:
+
+            for region, \
+                trade_product_sales, \
+                average_vat_percentage, \
+            in zip(
+                region_list,
+                trade_product_sales_list,
+                average_vat_percentage_list,
+            ):
+
+                low_level_queryset = self.model.objects.get(
+                    dim_iapfilter=self.dim_iapfilter,
+                    region=region,
+                )
+
+                # Post values
+                low_level_queryset.trade_product_sales = int(trade_product_sales.replace(',', ''))
+                low_level_queryset.average_vat_percentage = convert_percentage(average_vat_percentage.replace(',', ''))
+
+                # Save to database
+                low_level_queryset.save()
+
+
+class OTBMixTable(
+    project_mixins_view.DMSFilter,
+    views.TableRead
+):
+    r"""
+    View that shows the OTB support table (seasonal sales with VAT)
+    """
+
+    model = models.OTBPlanMix
+    post_amends_filter_dict = True
+    # page_length = 'unlimited'
+
+    format_list = [
+        'input_key', # region
+        'input_key', # product_type
+        'input_percentagecomma', # mix
+        'strong_intcomma_rounding0', # value
+    ]
+    column_styling_list = [
+        'transparent', # region
+        'transparent', # product_type
+        'transparent', # mix
+        'transparent', # value
+    ]
+
+    # Return empty table GET
+    def get(self, request):
+        self.context_dict = {
+            'message': {
+                'text': 'Table will be loaded after clicking the "Refresh" button.',
+                'type': 'info',
+                'position_left': True,
+            }
+        }
+        self.init_class_dict(request)
+        self.pre_action()
+        return self.display(request)
+
+    # Overwrite variables
+    def set_filter_dict(self):
+        temp_dict = dict()
+        temp_dict['dim_iapfilter'] = self.dim_iapfilter
+        temp_dict['region__in'] = self.filter_dict.get('region__in')
+        self.filter_dict = temp_dict
+
+    def pre_action(self):
+        for low_level_queryset in self.model.objects.filter(dim_iapfilter=self.dim_iapfilter).all():
+
+            # Support fields
+            support = models.OTBPlanSupport.objects.get(
+                dim_iapfilter=low_level_queryset.dim_iapfilter,
+                region=low_level_queryset.region,
+            )
+
+            # Calculations
+            low_level_queryset.value = low_level_queryset.mix * support.gross_sales
+
+            # Save to database
+            low_level_queryset.save()
+
+    def post_action(self):
+        region_list = self.post_filter_dict.get('region')
+        product_type_list = self.post_filter_dict.get('product_type')
+        mix_list = self.post_filter_dict.get('mix')
+
+        print(mix_list)
+        if region_list and mix_list:
+
+            for region, \
+                product_type, \
+                mix, \
+            in zip(
+                region_list,
+                product_type_list,
+                mix_list,
+            ):
+
+                low_level_queryset = self.model.objects.get(
+                    dim_iapfilter=self.dim_iapfilter,
+                    region=region,
+                    product_type=product_type,
+                )
+
+                # Post values
+                low_level_queryset.mix = convert_percentage(mix.replace(',', ''))
+
+                # Save to database
+                low_level_queryset.save()
+
+
 class TokenFieldDimProductStyle(views.TokenFieldAPI):
     r"""
     View that loads the data for tokenfield.

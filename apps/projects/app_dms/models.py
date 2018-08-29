@@ -1087,7 +1087,7 @@ class OTBPlanSupport(models.Model, mixins_model.ModelFormFieldNames):
     net_sales = models.IntegerField(default=0)
     trade_product_sales = models.IntegerField(default=0)
     total_sales = models.IntegerField(default=0)
-    average_vat_percentage = models.FloatField(default=0)
+    average_vat_percentage = models.FloatField(verbose_name='average VAT %',default=0)
     average_vat = models.IntegerField(verbose_name='average VAT', default=0)
     gross_sales = models.IntegerField(default=0)
 
@@ -1117,17 +1117,23 @@ class OTBPlanMix(models.Model, mixins_model.ModelFormFieldNames):
     # Unique fields
     dim_iapfilter = models.ForeignKey(DimIAPFilter, on_delete=models.CASCADE, default=1)
     region = models.CharField(max_length=45)
+    product_type = models.CharField(verbose_name='product type', max_length=100)
 
-    # MIX
+
+    # MIX AND EUR
     mix = models.FloatField(default=0)
+    value = models.IntegerField(verbose_name='EUR', default=0)
 
     # Frontend display
     form_field_list = [
         'region',
+        'product_type',
+        'mix',
+        'value',
     ]
 
     class Meta:
-        unique_together = (('dim_iapfilter', 'region',),)
+        unique_together = (('dim_iapfilter', 'region', 'product_type',),)
 
 
 class OTBPlan(models.Model, mixins_model.ModelFormFieldNames):

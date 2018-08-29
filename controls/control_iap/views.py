@@ -232,11 +232,11 @@ class BaseView(
                                             'label': 'Buy Plan',
                                             'url': reverse_lazy('buy_planning_tab_plan').replace('/', '#', 1),
                                         },
-                                        # {
-                                        #     'name': 'buy_planning_tab_otb',
-                                        #     'label': 'OTB Plan',
-                                        #     'url': reverse_lazy('range_planning_tab_architecture').replace('/', '#', 1),
-                                        # },
+                                        {
+                                            'name': 'buy_planning_tab_otb',
+                                            'label': 'OTB Plan',
+                                            'url': reverse_lazy('buy_planning_tab_otb').replace('/', '#', 1),
+                                        },
                                     ]
                                 },
                             ]
@@ -701,7 +701,7 @@ class ClusteringView(ContentView, mixins_view.SecurityModelNameMixin):
             {
                 'full_row': True,
                 'title': 'Stores',
-                'subtitle': 'by clusters',
+                'subtitle': 'by cluster',
                 'description': 'Only the field <strong>cluster user</strong> is editable',
                 'type': 'table',
                 'url': reverse_lazy('master_table'),
@@ -752,7 +752,7 @@ class ClusteringViewStore(ContentView):
             {
                 'full_row': True,
                 'title': 'Stores',
-                'subtitle': 'by clusters',
+                'subtitle': 'by cluster',
                 'description': 'Only the field <strong>cluster user</strong> is editable',
                 'type': 'table',
                 'url': reverse_lazy('master_table'),
@@ -1257,6 +1257,71 @@ class BuyPlanningViewPlan(ContentView):
                     'url_action': reverse_lazy('handsontable', kwargs={'item': 'SizeCurve'}),
                     'url_action_helper': reverse_lazy('handsontable_header', kwargs={'item': 'SizeCurve'}),
                     'width': 12,
+                },
+            ]
+        }
+
+
+class BuyPlanningViewOTB(ContentView):
+    r"""
+    View that loads the OTB
+    """
+
+    # Overwrite variables
+    def __init__(self):
+        super().__init__()
+        self.js_list.append('init_selectpicker_control')
+
+    def get_context_dict(self, request):
+
+        region_list_of_dict = list()
+        for idx, item in enumerate(sorted(models.DimStore.objects.all().values_list('dim_location__region', flat=True).distinct())):
+            temp_dict = {
+                'value': item,
+                'label': item,
+                'selected': False,
+            }
+            region_list_of_dict.append(temp_dict)
+
+        return {
+            'title': 'OTB Plan',
+            'selectpicker': [
+                {
+                    'name': 'region',
+                    'label': 'Region',
+                    'type': 'filter',
+                    'live_search': False,
+                    'action_box': False,
+                    'multiple': False,
+                    'values': region_list_of_dict,
+                },
+            ],
+            'panel_list': [
+                {
+                    'row_start': True,
+                    'title': 'Seasonal Sales',
+                    'type': 'table_read',
+                    'url': reverse_lazy('otb_plan_support'),
+                    'width': 7,
+                    'overflow': 'auto',
+                    'footer': {
+                        'button_list': [
+                            'save'
+                        ],
+                    },
+                },
+                {
+                    'row_end': True,
+                    'title': 'Seasonal Mix',
+                    'type': 'table_read',
+                    'url': reverse_lazy('otb_plan_mix'),
+                    'width': 5,
+                    'overflow': 'auto',
+                    'footer': {
+                        'button_list': [
+                            'save'
+                        ],
+                    },
                 },
             ]
         }

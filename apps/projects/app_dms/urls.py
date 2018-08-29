@@ -65,6 +65,9 @@ urlpatterns = [
 
     # Buy planning
     url(r'^buy_plan$', views.BuyPlanTable.as_view(), name='buy_plan'),
+    url(r'^otb_plan_support$', views.OTBSupportTable.as_view(), name='otb_plan_support'),
+    url(r'^otb_plan_mix$', views.OTBMixTable.as_view(), name='otb_plan_mix'),
+
 
 
     # Strategic sales plan
