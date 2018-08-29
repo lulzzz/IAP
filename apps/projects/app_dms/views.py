@@ -2133,7 +2133,6 @@ class OTBSupportTable(
     # Overwrite variables
     def set_filter_dict(self):
         temp_dict = dict()
-        print(self.dim_iapfilter)
         temp_dict['dim_iapfilter'] = self.dim_iapfilter
         temp_dict['region__in'] = self.filter_dict.get('region__in')
         self.filter_dict = temp_dict
@@ -2183,7 +2182,7 @@ class OTBMixTable(
     views.TableRead
 ):
     r"""
-    View that shows the OTB support table (seasonal sales with VAT)
+    View that shows the OTB mix table
     """
 
     model = models.OTBPlanMix
@@ -2243,7 +2242,6 @@ class OTBMixTable(
         product_type_list = self.post_filter_dict.get('product_type')
         mix_list = self.post_filter_dict.get('mix')
 
-        print(mix_list)
         if region_list and mix_list:
 
             for region, \
@@ -2266,6 +2264,147 @@ class OTBMixTable(
 
                 # Save to database
                 low_level_queryset.save()
+
+
+class OTBTable(
+    project_mixins_view.DMSFilter,
+    views.TableRead
+):
+    r"""
+    View that shows the OTB main table
+    """
+
+    model = models.OTBPlan
+    post_amends_filter_dict = True
+    # page_length = 'unlimited'
+
+    format_list = [
+        'input_key', # region
+        'input_key', # product_division
+
+        # ESSENTIAL FASHION + TREND
+        'intcomma_rounding0', # net_sales_essential_fashion_py
+        'intcomma_rounding0', # net_sales_trend_py
+        'input_percentagecomma', # mix_essential_fashion_py
+        'input_percentagecomma', # mix_trend_py
+        'percentagecomma', # mix_essential_fashion_ly
+        'percentagecomma', # mix_trend_ly
+        'intcomma_rounding0', # net_sales_essential_fashion_and_trend_py
+        'input_percentagecomma', # average_discount_rate
+        'intcomma_rounding0', # total_discount
+        'strong_intcomma_rounding0', # gross_sales_essential_fashion_and_trend_py
+
+        # RATES
+        'input_percentagecomma', # after_sale_sellthru_rate
+        'input_percentagecomma', # before_sale_sellthru_rate
+        'input_percentagecomma', # discount_in_sale_rate
+        'strong_intcomma_rounding0', # sell_in_full_price
+
+        # BUYING BUDGET
+        'intcomma_rounding0', # end_of_season_inventory
+        'intcomma_rounding0', # total_sell_in
+        'input_intcomma', # markup_rate
+        'strong_intcomma_rounding0', # total_buying_budget
+        'percentagecomma', # average_vat_percentage
+        'strong_intcomma_rounding0', # total_buying_budget_adjusted_for_vat
+    ]
+    column_styling_list = [
+        'transparent', # region
+        'transparent', # product_division
+
+        # ESSENTIAL FASHION + TREND
+        '#9cbffb', # net_sales_essential_fashion_py
+        '#9cbffb', # net_sales_trend_py
+        '#9cbffb', # mix_essential_fashion_py
+        '#9cbffb', # mix_trend_py
+        '#9cbffb', # mix_essential_fashion_ly
+        '#9cbffb', # mix_trend_ly
+        '#9cbffb', # net_sales_essential_fashion_and_trend_py
+        '#9cbffb', # average_discount_rate
+        '#9cbffb', # total_discount
+        '#9cbffb', # gross_sales_essential_fashion_and_trend_py
+
+        # RATES
+        '#b0caf6', # after_sale_sellthru_rate
+        '#b0caf6', # before_sale_sellthru_rate
+        '#b0caf6', # discount_in_sale_rate
+        '#b0caf6', # sell_in_full_price
+
+        # BUYING BUDGET
+        '#c1d5f7', # end_of_season_inventory
+        '#c1d5f7', # total_sell_in
+        '#c1d5f7', # markup_rate
+        '#c1d5f7', # total_buying_budget
+        '#c1d5f7', # average_vat_percentage
+        '#c1d5f7', # total_buying_budget_adjusted_for_vat
+    ]
+
+    # Return empty table GET
+    def get(self, request):
+        self.context_dict = {
+            'message': {
+                'text': 'Table will be loaded after clicking the "Refresh" button.',
+                'type': 'info',
+                'position_left': True,
+            }
+        }
+        self.init_class_dict(request)
+        self.pre_action()
+        return self.display(request)
+
+    # Overwrite variables
+    def set_filter_dict(self):
+        temp_dict = dict()
+        temp_dict['dim_iapfilter'] = self.dim_iapfilter
+        temp_dict['region__in'] = self.filter_dict.get('region__in')
+        self.filter_dict = temp_dict
+
+    def pre_action(self):
+        pass
+        # for low_level_queryset in self.model.objects.filter(dim_iapfilter=self.dim_iapfilter).all():
+        #
+        #     # Support fields
+        #     support = models.OTBPlanSupport.objects.get(
+        #         dim_iapfilter=low_level_queryset.dim_iapfilter,
+        #         region=low_level_queryset.region,
+        #     )
+        #
+        #     # Calculations
+        #     low_level_queryset.value = low_level_queryset.mix * support.gross_sales
+        #
+        #     # Save to database
+        #     low_level_queryset.save()
+
+    def post_action(self):
+        pass
+        # region_list = self.post_filter_dict.get('region')
+        # product_type_list = self.post_filter_dict.get('product_type')
+        # mix_list = self.post_filter_dict.get('mix')
+        #
+        # print(mix_list)
+        # if region_list and mix_list:
+        #
+        #     for region, \
+        #         product_type, \
+        #         mix, \
+        #     in zip(
+        #         region_list,
+        #         product_type_list,
+        #         mix_list,
+        #     ):
+        #
+        #         low_level_queryset = self.model.objects.get(
+        #             dim_iapfilter=self.dim_iapfilter,
+        #             region=region,
+        #             product_type=product_type,
+        #         )
+        #
+        #         # Post values
+        #         low_level_queryset.mix = convert_percentage(mix.replace(',', ''))
+        #
+        #         # Save to database
+        #         low_level_queryset.save()
+
 
 
 class TokenFieldDimProductStyle(views.TokenFieldAPI):

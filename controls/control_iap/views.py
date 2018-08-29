@@ -1323,6 +1323,19 @@ class BuyPlanningViewOTB(ContentView):
                         ],
                     },
                 },
+                {
+                    'full_row': True,
+                    'title': 'Plan',
+                    'type': 'table_read',
+                    'url': reverse_lazy('otb_plan'),
+                    'width': 12,
+                    'overflow': 'auto',
+                    # 'footer': {
+                    #     'button_list': [
+                    #         'save'
+                    #     ],
+                    # },
+                },
             ]
         }
 
