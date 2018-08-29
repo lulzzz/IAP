@@ -1,4 +1,5 @@
 import pandas as pd
+from decimal import *
 
 def upsert_featurestoreinput(session, dbo):
 
@@ -110,8 +111,8 @@ def upsert_featurestoreinput(session, dbo):
                 entry['sales_accessories'] = accessories[accessories['dim_store_id'] == store_id]['salesvalue'].iloc[0]
             else:
                 entry['sales_accessories'] = 0.
-            entry['cluster_ai'] = '-'
-            entry['cluster_user'] = '-'
+            entry['cluster_ai'] = 'XX'
+            entry['cluster_user'] = 'XX'
             entry['optimal_assortment_similarity_coefficient'] = 0
 
             # Convert floats to int
@@ -124,7 +125,6 @@ def upsert_featurestoreinput(session, dbo):
             if record is not None:
                 # Update record
                 update_count += 1
-                total_update
 
                 for k,v in entry.items():
                     if k != 'cluster_user':
