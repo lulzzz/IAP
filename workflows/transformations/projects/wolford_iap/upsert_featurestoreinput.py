@@ -1,7 +1,7 @@
 import pandas as pd
 
 def upsert_featurestoreinput(session, dbo):
-    
+
     query = session.query(dbo.app_dms_dimproduct)
     products = pd.read_sql(query.statement, query.session.bind)
 
@@ -86,27 +86,27 @@ def upsert_featurestoreinput(session, dbo):
             entry['sku_count'] = sku_count[sku_count['dim_store_id'] == store_id]['units'].iloc[0]
     #         entry['relative_sales_volume_ty'] = group_sum[group_sum['dim_store_id'] == store_id]['units'].iloc[0]
             entry['average_value_transaction'] = group_mean[group_mean['dim_store_id'] == store_id]['salesvalue'].iloc[0]
-            if store_id in swimwear:
+            if store_id in swimwear['dim_store_id'].values:
                 entry['sales_swimwear'] = swimwear[swimwear['dim_store_id'] == store_id]['salesvalue'].iloc[0]
             else:
                 entry['sales_swimwear'] = 0.
-            if store_id in lingerie:
+            if store_id in lingerie['dim_store_id'].values:
                 entry['sales_lingerie'] = lingerie[lingerie['dim_store_id'] == store_id]['salesvalue'].iloc[0]
             else:
                 entry['sales_lingerie'] = 0.
-            if store_id in legwear:
+            if store_id in legwear['dim_store_id'].values:
                 entry['sales_legwear'] = legwear[legwear['dim_store_id'] == store_id]['salesvalue'].iloc[0]
             else:
                 entry['sales_legwear'] = 0.
-            if store_id in ready:
+            if store_id in ready['dim_store_id'].values:
                 entry['sales_ready_to_wear'] = ready[ready['dim_store_id'] == store_id]['salesvalue'].iloc[0]
             else:
                 entry['sales_ready_to_wear'] = 0.
-            if store_id in adv:
+            if store_id in adv['dim_store_id'].values:
                 entry['sales_adv_promotion'] = adv[adv['dim_store_id'] == store_id]['salesvalue'].iloc[0]
             else:
                 entry['sales_adv_promotion'] = 0.
-            if store_id in accessories:
+            if store_id in accessories['dim_store_id'].values:
                 entry['sales_accessories'] = accessories[accessories['dim_store_id'] == store_id]['salesvalue'].iloc[0]
             else:
                 entry['sales_accessories'] = 0.
