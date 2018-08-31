@@ -2140,7 +2140,16 @@ class OTBSupportTable(
     def pre_action(self):
         for low_level_queryset in self.model.objects.filter(dim_iapfilter=self.dim_iapfilter).all():
 
+            # Get net sales from strategic sales plan
+            strategic_sales_plan = models.StrategicSalesPlan.objects.filter(
+                region=low_level_queryset.region,
+                sales_year=self.sales_year,
+                sales_season=self.sales_season,
+                scenario='conservative',
+            ).aggregate(Sum('net_sales'))
+
             # Calculations
+            low_level_queryset.net_sales = strategic_sales_plan.get('net_sales__sum', 0)
             low_level_queryset.total_sales = low_level_queryset.net_sales + low_level_queryset.trade_product_sales
             low_level_queryset.average_vat = low_level_queryset.total_sales * low_level_queryset.average_vat_percentage
             low_level_queryset.gross_sales = low_level_queryset.total_sales + low_level_queryset.average_vat
@@ -2276,6 +2285,7 @@ class OTBTable(
 
     model = models.OTBPlan
     post_amends_filter_dict = True
+    order_by = 'product_division'
     # page_length = 'unlimited'
 
     format_list = [
@@ -2360,50 +2370,55 @@ class OTBTable(
         self.filter_dict = temp_dict
 
     def pre_action(self):
-        pass
-        # for low_level_queryset in self.model.objects.filter(dim_iapfilter=self.dim_iapfilter).all():
-        #
-        #     # Support fields
-        #     support = models.OTBPlanSupport.objects.get(
-        #         dim_iapfilter=low_level_queryset.dim_iapfilter,
-        #         region=low_level_queryset.region,
-        #     )
-        #
-        #     # Calculations
-        #     low_level_queryset.value = low_level_queryset.mix * support.gross_sales
-        #
-        #     # Save to database
-        #     low_level_queryset.save()
+        for low_level_queryset in self.model.objects.filter(dim_iapfilter=self.dim_iapfilter).all():
+
+            # Mix fields
+            mix = models.OTBPlanMix.objects.filter(
+                dim_iapfilter=low_level_queryset.dim_iapfilter,
+                region=low_level_queryset.region,
+            )
+
+            mix_value_essential_fashion = mix.filter(product_type='Essential Fashion').get()
+            mix_value_trend = mix.filter(product_type='Trend').get()
+
+            # Calculations
+            low_level_queryset.net_sales_essential_fashion_py = mix_value_essential_fashion.value * low_level_queryset.mix_essential_fashion_py
+            low_level_queryset.net_sales_trend_py = mix_value_trend.value * low_level_queryset.mix_trend_py
+
+            # Save to database
+            low_level_queryset.save()
 
     def post_action(self):
-        pass
-        # region_list = self.post_filter_dict.get('region')
-        # product_type_list = self.post_filter_dict.get('product_type')
-        # mix_list = self.post_filter_dict.get('mix')
-        #
-        # print(mix_list)
-        # if region_list and mix_list:
-        #
-        #     for region, \
-        #         product_type, \
-        #         mix, \
-        #     in zip(
-        #         region_list,
-        #         product_type_list,
-        #         mix_list,
-        #     ):
-        #
-        #         low_level_queryset = self.model.objects.get(
-        #             dim_iapfilter=self.dim_iapfilter,
-        #             region=region,
-        #             product_type=product_type,
-        #         )
-        #
-        #         # Post values
-        #         low_level_queryset.mix = convert_percentage(mix.replace(',', ''))
-        #
-        #         # Save to database
-        #         low_level_queryset.save()
+        region_list = self.post_filter_dict.get('region')
+        product_division_list = self.post_filter_dict.get('product_division')
+        mix_essential_fashion_py_list = self.post_filter_dict.get('mix_essential_fashion_py')
+        mix_trend_py_list = self.post_filter_dict.get('mix_trend_py')
+
+        if region_list and product_division_list and mix_essential_fashion_py_list and mix_trend_py_list:
+
+            for region, \
+                product_division, \
+                mix_essential_fashion_py, \
+                mix_trend_py, \
+            in zip(
+                region_list,
+                product_division_list,
+                mix_essential_fashion_py_list,
+                mix_trend_py_list,
+            ):
+
+                low_level_queryset = self.model.objects.get(
+                    dim_iapfilter=self.dim_iapfilter,
+                    region=region,
+                    product_division=product_division,
+                )
+
+                # Post values
+                low_level_queryset.mix_essential_fashion_py = convert_percentage(mix_essential_fashion_py.replace(',', ''))
+                low_level_queryset.mix_trend_py = convert_percentage(mix_trend_py.replace(',', ''))
+
+                # Save to database
+                low_level_queryset.save()
 
 
 

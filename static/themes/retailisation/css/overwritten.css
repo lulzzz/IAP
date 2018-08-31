@@ -12,6 +12,11 @@ input[type="checkbox"].form-control{
 }
 
 /* Datatable */
+
+div.dataTables_wrapper div.dataTables_filter input {
+    width: 150px !important;
+}
+
 table.dataTable thead .sorting::after, table.dataTable thead .sorting_asc::after, table.dataTable thead .sorting_desc::after  {
     content: none !important;
 }

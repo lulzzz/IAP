@@ -1330,11 +1330,11 @@ class BuyPlanningViewOTB(ContentView):
                     'url': reverse_lazy('otb_plan'),
                     'width': 12,
                     'overflow': 'auto',
-                    # 'footer': {
-                    #     'button_list': [
-                    #         'save'
-                    #     ],
-                    # },
+                    'footer': {
+                        'button_list': [
+                            'save'
+                        ],
+                    },
                 },
             ]
         }

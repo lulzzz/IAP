@@ -64,7 +64,6 @@ class FeatureStoreInputSerializer(
     dim_store_country_read_only = serializers.SerializerMethodField()
     net_retail_sales_in_eur_ty_read_only = serializers.SerializerMethodField()
     # average_monthly_sales_for_ty_read_only = serializers.SerializerMethodField()
-    relative_sales_volume_ty_read_only = serializers.SerializerMethodField()
     sku_count_read_only = serializers.SerializerMethodField()
     average_value_transaction_read_only = serializers.SerializerMethodField()
     sales_lingerie_read_only = serializers.SerializerMethodField()
@@ -107,12 +106,6 @@ class FeatureStoreInputSerializer(
 
     # def get_average_monthly_sales_for_ty_read_only(self, obj):
     #     return obj.average_monthly_sales_for_ty
-
-    def get_relative_sales_volume_ty_read_only(self, obj):
-        return obj.relative_sales_volume_ty
-        # if obj.dim_store.store_size > 0:
-        #     return int(round(obj.net_retail_sales_in_eur_ty / obj.dim_store.store_size))
-        # return int(round(obj.net_retail_sales_in_eur_ty))
 
     def get_sku_count_read_only(self, obj):
         return obj.sku_count
@@ -163,7 +156,6 @@ class FeatureStoreInputSerializer(
             'dim_store_country_read_only', # read only fields
             'net_retail_sales_in_eur_ty_read_only',
             # 'average_monthly_sales_for_ty_read_only',
-            'relative_sales_volume_ty_read_only',
             'sku_count_read_only',
             'average_value_transaction_read_only',
             'sales_lingerie_read_only',
